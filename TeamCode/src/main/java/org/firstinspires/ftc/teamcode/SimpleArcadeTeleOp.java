@@ -1,11 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 
-import org.firstinspires.ftc.teamcode.subsystems.ArcadeDrivetrain;
+import org.firstinspires.ftc.teamcode.mechanisms.ArcadeDrivetrain;
 
 @TeleOp
 public class SimpleArcadeTeleOp extends OpMode{
