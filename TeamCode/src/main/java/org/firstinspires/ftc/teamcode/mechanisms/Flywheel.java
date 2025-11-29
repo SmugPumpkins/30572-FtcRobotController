@@ -25,12 +25,16 @@ public class Flywheel {
             launcherActive = false;
         }
     }
-
+    public boolean is_at_target(){
+        return true;
+    }
 
     private boolean launcherActive = false;
+
     private DcMotorEx launcher = null;
             public Flywheel(HardwareMap hardware_map, int launcher_direction){
                 launcher = hardware_map.get(DcMotorEx.class, LAUNCHER);
+                launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
                 if (launcher_direction == FORWARD){
                     launcher.setDirection(DcMotorEx.Direction.FORWARD);
                 } else {
