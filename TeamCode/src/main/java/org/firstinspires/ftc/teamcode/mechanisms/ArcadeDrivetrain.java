@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
-
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
@@ -24,6 +23,7 @@ public class ArcadeDrivetrain {
             back_right.setDirection(DcMotor.Direction.REVERSE);
         }
     }
+
     public void drive(double forward, double rotate){
         double forward_input = -forward;
         double leftPower = Range.clip(forward_input + rotate, -1.0, 1.0);
