@@ -1,0 +1,97 @@
+package org.firstinspires.ftc.teamcode.mechanisms;
+
+import static org.firstinspires.ftc.teamcode.utils.Config.BACK_LEFT;
+import static org.firstinspires.ftc.teamcode.utils.Config.BACK_RIGHT;
+import static org.firstinspires.ftc.teamcode.utils.Config.FRONT_LEFT;
+import static org.firstinspires.ftc.teamcode.utils.Config.FRONT_RIGHT;
+import static org.firstinspires.ftc.teamcode.utils.Constants.FORWARD;
+
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.IMU;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+
+public class MecanumDriveTrain {
+    private DcMotor front_left = null;
+    private DcMotor front_right = null;
+    private DcMotor back_left = null;
+    private DcMotor back_right = null;
+
+    IMU imu;
+
+    public MecanumDriveTrain (HardwareMap hardware_map) {
+        front_left = hardware_map.get(DcMotor.class, FRONT_LEFT);
+        front_right = hardware_map.get(DcMotor.class, FRONT_RIGHT);
+        back_left = hardware_map.get(DcMotor.class, BACK_LEFT);
+        back_right = hardware_map.get(DcMotor.class, BACK_RIGHT);
+        imu = hardware_map.get(IMU.class, "imu");
+        // This needs to be changed to match the orientation on your robot
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
+                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
+                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+
+        RevHubOrientationOnRobot orientationOnRobot = new
+                RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
+    }
+
+    public void init(int front_left_direction, int front_right_direction, int back_left_direction, int back_right_direction) {
+        if (front_left_direction == FORWARD) {
+            front_left.setDirection(DcMotorSimple.Direction.FORWARD);
+        } else {
+            front_left.setDirection((DcMotorSimple.Direction.REVERSE));
+        }
+        if (front_right_direction == FORWARD) {
+            front_right.setDirection(DcMotorSimple.Direction.FORWARD);
+        } else {
+            front_right.setDirection((DcMotorSimple.Direction.REVERSE));
+        }
+        if (back_left_direction == FORWARD) {
+            back_left.setDirection(DcMotorSimple.Direction.FORWARD);
+        } else {
+            back_left.setDirection((DcMotorSimple.Direction.REVERSE));
+        }
+        if (back_right_direction == FORWARD) {
+            back_right.setDirection(DcMotorSimple.Direction.FORWARD);
+        } else {
+            back_right.setDirection((DcMotorSimple.Direction.REVERSE));
+        }
+    }
+
+    public void drive(double forward, double right, double rotate) {
+        double frontLeftPower = forward + right + rotate;
+        double frontRightPower = forward - right - rotate;
+        double backRightPower = forward + right - rotate;
+        double backLeftPower = forward - right + rotate;
+
+        double maxPower = 1.0;
+        double maxSpeed = 1.0;
+
+        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
+        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+
+        front_left.setPower(maxSpeed * (frontLeftPower / maxPower));
+        front_right.setPower(maxSpeed * (frontRightPower / maxPower));
+        back_left.setPower(maxSpeed * (backLeftPower / maxPower));
+        back_right.setPower(maxSpeed * (backRightPower / maxPower));
+    }
+
+    private void driveFieldRelative(double forward, double right, double rotate) {
+        double theta = Math.atan2(forward, right);
+        double r = Math.hypot(right, forward);
+
+        theta = AngleUnit.normalizeRadians(theta -
+                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+
+        double newForward = r * Math.sin(theta);
+        double newRight = r * Math.cos(theta);
+
+        drive(newForward, newRight, rotate);
+    }
+}
