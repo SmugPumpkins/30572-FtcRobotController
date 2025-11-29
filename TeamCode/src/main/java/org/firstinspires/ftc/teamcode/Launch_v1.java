@@ -1,5 +1,8 @@
+//To do:
+//Code detection of the flywheel's velocity, feeder and hood's angle, and sort's position
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -23,8 +26,6 @@ public class Launch_v1 {
     private Flywheel flywheel = null;
     private HardwareMap hardware_map;
     private Sort sort = new Sort();
-    private int feeder_time = 200;
-    private int flywheel_adjust_time = 500;
     public Launch_v1(HardwareMap input_hardware_map){
         hardware_map= input_hardware_map;
     }
@@ -49,18 +50,34 @@ public class Launch_v1 {
             flywheel.turnMotorOn(true);
             sort.slot_left(gamepad1.left_bumper);
             sort.slot_right(gamepad1.right_bumper);
-            if (feed.is_homed()) {
+            if (flywheel.is_at_target()){
                 state = State.ACTIVATE;
             }
         }
         if (state == State.ACTIVATE){
             feed.up();
-            wait(feeder_time);
-            state = State.SHOOTING;
+            if (feed.is_homed()) {
+                state = State.SHOOTING;
+            }
         }
         if (state == State.SHOOTING){
             feed.down();
-            wait(feeder_time);
+            if (feed.is_homed()){
+                state = State.STANDBY;
+            }
+        }
+        if (state == State.STANDBY){
+            hood.angle();
+            feed.down();
+            flywheel.turnMotorOn(true);
+            sort.slot_left(gamepad1.left_bumper);
+            sort.slot_right(gamepad1.right_bumper);
+            if (gamepad1.b){
+                state = State.IDLE;
+            }
+            if (gamepad1.y){
+                state = State.ACTIVATE;
+            }
         }
     }
 }
