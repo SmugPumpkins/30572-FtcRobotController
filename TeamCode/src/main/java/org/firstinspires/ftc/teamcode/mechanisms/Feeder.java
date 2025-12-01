@@ -8,7 +8,7 @@ public class Feeder {
 
     }
     public boolean is_homed(){
-        return true; //Need to actually detect if the feeder is homed
+        return true;
     }
 
 }
