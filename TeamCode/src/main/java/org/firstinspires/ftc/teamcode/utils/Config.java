@@ -6,4 +6,8 @@ public final class Config {
     public static final String FRONT_LEFT = "front_left";
     public static final String FRONT_RIGHT = "front_right";
     public static final String LAUNCHER = "launcher";
+    public static final String ONBOARD_IMU = "imu";
+    public static final String RIGHT_FEEDER = "right_feeder";
+    public static final String LEFT_FEEDER = "left_feeder";
+    public static final String WEBCAM = "Webcam 1";
 }

@@ -7,7 +7,7 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 import org.firstinspires.ftc.teamcode.mechanisms.ArcadeDrivetrain;
 
 @TeleOp
-public class SimpleArcadeTeleOp extends OpMode{
+public class SimpleMecanumTeleOp extends OpMode{
     ArcadeDrivetrain drivetrain = null;
 
     @Override
