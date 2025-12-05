@@ -21,7 +21,7 @@ public class Launch_v1 {
             STANDBY
     }
     private State state = State.IDLE;
-    private Hood hood =null;
+    private Hood hood = null;
     private Feeder feed = null;
     private Flywheel flywheel = null;
     private HardwareMap hardware_map;
