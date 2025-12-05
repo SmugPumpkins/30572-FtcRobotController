@@ -36,45 +36,44 @@ public class Launch_v1 {
         flywheel = new Flywheel(hardware_map, REVERSE);
     }
     public void run(boolean shotPressed) {
-        if (state == State.IDLE){
-           hood.home();
-           feed.down();
-           flywheel.turnMotorOff(true);
-           if (shotPressed){
-               state = State.SPIN_UP;
-           }
+        if (state == State.IDLE) {
+            hood.home();
+            feed.down();
+            flywheel.turnMotorOff(true);
+            if (shotPressed) {
+                state = State.SPIN_UP;
+            }
         }
-        if (state == State.SPIN_UP){
+        if (state == State.SPIN_UP) {
             hood.angle();
             feed.down();
             flywheel.turnMotorOn(true);
             sort.slot_left(gamepad1.left_bumper);
             sort.slot_right(gamepad1.right_bumper);
-            if (flywheel.is_at_target()){
+            if (flywheel.is_at_target()) {
                 state = State.ACTIVATE;
             }
         }
-        if (state == State.ACTIVATE){
+        if (state == State.ACTIVATE) {
             feed.up();
             if (feed.is_homed()) {
                 state = State.SHOOTING;
             }
         }
-        if (state == State.SHOOTING){
+        if (state == State.SHOOTING) {
             feed.down();
-            if (feed.is_homed()){
+            if (feed.is_homed()) {
                 state = State.STANDBY;
             }
         }
-        if (state == State.STANDBY){
+        if (state == State.STANDBY) {
             hood.angle();
             feed.down();
             flywheel.turnMotorOn(true);
             sort.slot_left(gamepad1.left_bumper);
             sort.slot_right(gamepad1.right_bumper);
-            if (gamepad1.b){
+            if (gamepad1.b) {
                 state = State.IDLE;
             }
         }
-    }
-}
+    }}
