@@ -27,7 +27,7 @@ public class Launch_v1 {
     private HardwareMap hardware_map;
     private Sort sort = new Sort();
     public Launch_v1(HardwareMap input_hardware_map){
-        hardware_map= input_hardware_map;
+        hardware_map = input_hardware_map;
     }
     public void init(){
         hood = new Hood();
@@ -74,9 +74,6 @@ public class Launch_v1 {
             sort.slot_right(gamepad1.right_bumper);
             if (gamepad1.b){
                 state = State.IDLE;
-            }
-            if (gamepad1.y){
-                state = State.ACTIVATE;
             }
         }
     }
