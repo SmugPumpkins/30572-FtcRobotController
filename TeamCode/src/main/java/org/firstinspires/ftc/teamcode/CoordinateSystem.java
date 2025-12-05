@@ -1,9 +1,9 @@
+//To do:
+//Find if 19.894 is accurate for ticks_per_millimeter, and refine it if not
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-
-import javax.net.ssl.X509TrustManager;
 
 public class CoordinateSystem {
     double x = 0;
