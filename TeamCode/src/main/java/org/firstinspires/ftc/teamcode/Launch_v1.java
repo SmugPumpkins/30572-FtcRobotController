@@ -14,27 +14,31 @@ import org.firstinspires.ftc.teamcode.mechanisms.Sort;
 
 public class Launch_v1 {
     private enum State {
-            IDLE,
-            SPIN_UP,
-            ACTIVATE,
-            SHOOTING,
-            STANDBY
+        IDLE,
+        SPIN_UP,
+        ACTIVATE,
+        SHOOTING,
+        STANDBY
     }
+
     private State state = State.IDLE;
     private Hood hood = null;
     private Feeder feed = null;
     private Flywheel flywheel = null;
     private HardwareMap hardware_map;
     private Sort sort = new Sort();
-    public Launch_v1(HardwareMap input_hardware_map){
+
+    public Launch_v1(HardwareMap input_hardware_map) {
         hardware_map = input_hardware_map;
     }
-    public void init(){
+
+    public void init() {
         hood = new Hood();
         feed = new Feeder();
         sort = new Sort();
         flywheel = new Flywheel(hardware_map, REVERSE);
     }
+
     public void run(boolean shotPressed) {
         if (state == State.IDLE) {
             hood.home();
@@ -76,4 +80,5 @@ public class Launch_v1 {
                 state = State.IDLE;
             }
         }
-    }}
+    }
+}
