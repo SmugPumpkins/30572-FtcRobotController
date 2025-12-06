@@ -30,7 +30,7 @@ public class MecanumDriveTrain {
         imu = hardware_map.get(IMU.class, "imu");
         // This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.UP;
+                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
@@ -65,8 +65,8 @@ public class MecanumDriveTrain {
     public void drive(double forward, double right, double rotate) {
         double frontLeftPower = forward + right + rotate;
         double frontRightPower = forward - right - rotate;
-        double backRightPower = forward + right - rotate;
-        double backLeftPower = forward - right + rotate;
+        double backRightPower = forward - right + rotate;
+        double backLeftPower = forward + right - rotate;
 
         double maxPower = 1.0;
         double maxSpeed = 1.0;
@@ -82,7 +82,7 @@ public class MecanumDriveTrain {
         back_right.setPower(maxSpeed * (backRightPower / maxPower));
     }
 
-    private void driveFieldRelative(double forward, double right, double rotate) {
+    public void driveFieldRelative(double forward, double right, double rotate) {
         double theta = Math.atan2(forward, right);
         double r = Math.hypot(right, forward);
 
