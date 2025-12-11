@@ -15,11 +15,12 @@ public class SimpleMecanumTeleOp extends OpMode {
     public void init() {
         drivetrain = new MecanumDriveTrain(hardwareMap);
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
+        telemetry.addLine("V1");
     }
 
     @Override
     public void loop() {
-        drivetrain.driveFieldRelative(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        drivetrain.drive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         if (gamepad1.a) {
             drivetrain.drive(0, 0, 0);
         }

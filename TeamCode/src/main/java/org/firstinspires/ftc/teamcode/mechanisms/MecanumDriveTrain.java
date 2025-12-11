@@ -41,24 +41,24 @@ public class MecanumDriveTrain {
 
     public void init(int front_left_direction, int front_right_direction, int back_left_direction, int back_right_direction) {
         if (front_left_direction == FORWARD) {
-            front_left.setDirection(DcMotorSimple.Direction.FORWARD);
+            front_left.setDirection(DcMotor.Direction.FORWARD);
         } else {
-            front_left.setDirection((DcMotorSimple.Direction.REVERSE));
+            front_left.setDirection((DcMotor.Direction.REVERSE));
         }
         if (front_right_direction == FORWARD) {
-            front_right.setDirection(DcMotorSimple.Direction.FORWARD);
+            front_right.setDirection(DcMotor.Direction.FORWARD);
         } else {
-            front_right.setDirection((DcMotorSimple.Direction.REVERSE));
+            front_right.setDirection((DcMotor.Direction.REVERSE));
         }
         if (back_left_direction == FORWARD) {
-            back_left.setDirection(DcMotorSimple.Direction.FORWARD);
+            back_left.setDirection(DcMotor.Direction.FORWARD);
         } else {
-            back_left.setDirection((DcMotorSimple.Direction.REVERSE));
+            back_left.setDirection((DcMotor.Direction.REVERSE));
         }
         if (back_right_direction == FORWARD) {
-            back_right.setDirection(DcMotorSimple.Direction.FORWARD);
+            back_right.setDirection(DcMotor.Direction.FORWARD);
         } else {
-            back_right.setDirection((DcMotorSimple.Direction.REVERSE));
+            back_right.setDirection((DcMotor.Direction.REVERSE));
         }
     }
 
