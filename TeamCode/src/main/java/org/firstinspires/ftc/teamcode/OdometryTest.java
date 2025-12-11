@@ -11,7 +11,7 @@ public class OdometryTest extends OpMode {
     }
     @Override
     public void loop() {
-        navigate.setTarget_x(0);
+        navigate.setTarget_x(50);
         navigate.setTarget_y(0);
     }
 }
