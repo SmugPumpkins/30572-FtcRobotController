@@ -22,7 +22,7 @@ public class Navigate_v1 {
             return false;
         }
     }
-    public void setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods goBILDA_4_BAR_POD);
+    public void setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods goBILDA_4_BAR_POD)
     public void init(){
         coords = new CoordinateSystem(hardware_map);
         drivetrain = new MecanumDriveTrain(hardware_map);
