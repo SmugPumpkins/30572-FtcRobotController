@@ -6,10 +6,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
+import org.firstinspires.ftc.teamcode.examples.MecanumExample;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
 public class Navigate_v2 {
     private GoBildaPinpointDriver pinpoint;
-    MecanumDriveTrain drivetrain = null;
+    MecanumExample drivetrain =new MecanumExample();
     private double target_x = 0;
     private double target_y = 0;
     private int x_speed = 0;
@@ -19,6 +20,7 @@ public class Navigate_v2 {
     private GoBildaPinpointDriver.EncoderDirection x_direction = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     private GoBildaPinpointDriver.EncoderDirection y_direction = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     public void init(HardwareMap hardwareMap) {
+        drivetrain.init(hardwareMap);
         pinpoint = hardwareMap.get(GoBildaPinpointDriver.class, PINPOINT);
         configurePinpoint();
         resetPinpointPosition();
