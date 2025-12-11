@@ -16,6 +16,7 @@ public class FlywheelExample {
     private boolean launcherActive = false;
 
 
+
     public void init(HardwareMap hardwareMap){
         launcher = hardwareMap.get(DcMotorEx.class, LAUNCHER);
         if (launcher_direction == FORWARD){

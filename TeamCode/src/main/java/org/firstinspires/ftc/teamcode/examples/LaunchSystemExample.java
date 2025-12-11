@@ -1,13 +1,15 @@
 package org.firstinspires.ftc.teamcode.examples;
 
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
-
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class LaunchSystemExample {
     private final FeederExample feeder = new FeederExample();
     private final FlywheelExample flywheel = new FlywheelExample();
     private AprilTagSensorExample aprilTagSensor;
+    private int base_velocity = DEFAULT_VELOCITY;
+    private double distance = 0;
+    private boolean useAprilTagSensor = false;
     private enum State {
         IDLE,
         SPIN_UP,
@@ -22,9 +24,9 @@ public class LaunchSystemExample {
         aprilTagSensor = sensor;
         flywheel.init(hardwareMap);
         feeder.init(hardwareMap);
+        useAprilTagSensor = true;
     }
     public void init(HardwareMap hardwareMap){
-        aprilTagSensor = new AprilTagSensorExample();
         aprilTagSensor.init(hardwareMap);
         flywheel.init(hardwareMap);
         feeder.init(hardwareMap);
@@ -81,21 +83,24 @@ public class LaunchSystemExample {
     public void setLauncherToReady(){
             state = State.READY;
     }
-
+    public void setDistance(double input_distance){
+        distance = input_distance;
+    }
 
     private int targetVelocityByDistance(){
-        double yDist = aprilTagSensor.getYDistance();
-        int velocity = DEFAULT_VELOCITY;
+        double yDist = distance;
+        if(useAprilTagSensor) yDist = aprilTagSensor.getYDistance();
+        int velocity = base_velocity;
         if (yDist >=  84){
-            velocity = 1500;
+            velocity = base_velocity + 300;
         } else if (yDist >= 78){
-            velocity = 1450;
+            velocity = base_velocity + 250;
         } else if (yDist >= 69.9){
-            velocity = 1400;
+            velocity = base_velocity = 200;
         } else if (yDist >= 56){
-            velocity = 1300;
+            velocity = base_velocity + 100;
         } else if (yDist >= 41.7){
-            velocity = 1250;
+            velocity = base_velocity + 50;
         }
         return velocity;
     }

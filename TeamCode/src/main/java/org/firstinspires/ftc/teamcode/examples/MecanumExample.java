@@ -6,6 +6,7 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class MecanumExample {
@@ -16,36 +17,28 @@ public class MecanumExample {
     private HubIMUExample imu;
     private boolean useFieldRelativeDrive = false;
     private boolean imuSet = false;
-    private int front_left_direction = FORWARD;
-    private int front_right_direction = FORWARD;
-    private int back_right_direction = FORWARD;
-    private int back_left_direction = FORWARD;
+    private final DcMotor.Direction front_left_direction = DcMotor.Direction.FORWARD;
+    private final DcMotor.Direction front_right_direction = DcMotor.Direction.FORWARD;
+    private final DcMotor.Direction back_left_direction = DcMotor.Direction.FORWARD;
+    private final DcMotor.Direction back_right_direction = DcMotor.Direction.FORWARD;
+    public enum DriveMode {
+        ROBOT_RELATIVE,
+        FIELD_RELATIVE_IMU,
+        FIELD_RELATIVE_LOCALIZATION
+    }
+    private DriveMode drive_mode;
+
 
     public void init(HardwareMap hardware_map) {
         front_left = hardware_map.get(DcMotor.class, FRONT_LEFT);
         front_right = hardware_map.get(DcMotor.class, FRONT_RIGHT);
         back_left = hardware_map.get(DcMotor.class, BACK_LEFT);
         back_right = hardware_map.get(DcMotor.class, BACK_RIGHT);
-        if (front_left_direction == FORWARD) {
-            front_left.setDirection(DcMotor.Direction.FORWARD);
-        } else {
-            front_left.setDirection((DcMotor.Direction.REVERSE));
-        }
-        if (front_right_direction == FORWARD) {
-            front_right.setDirection(DcMotor.Direction.FORWARD);
-        } else {
-            front_right.setDirection((DcMotor.Direction.REVERSE));
-        }
-        if (back_left_direction == FORWARD) {
-            back_left.setDirection(DcMotor.Direction.FORWARD);
-        } else {
-            back_left.setDirection((DcMotor.Direction.REVERSE));
-        }
-        if (back_right_direction == FORWARD) {
-            back_right.setDirection(DcMotor.Direction.FORWARD);
-        } else {
-            back_right.setDirection((DcMotor.Direction.REVERSE));
-        }
+        front_left.setDirection(front_left_direction);
+        front_right.setDirection(front_right_direction);
+        back_left.setDirection(back_left_direction);
+        back_right.setDirection(back_right_direction);
+        drive_mode = DriveMode.ROBOT_RELATIVE;
     }
 
 
@@ -55,6 +48,10 @@ public class MecanumExample {
         } else {
             drive(forward, right, rotate);
         }
+    }
+
+    public void run(double forward, double right, double rotate, double heading){
+        driveFieldRelative(forward, right, rotate, heading);
     }
 
     public void drive(double forward, double right, double rotate){
@@ -76,7 +73,6 @@ public class MecanumExample {
         back_left.setPower(maxSpeed * (backLeftPower / maxPower));
         back_right.setPower(maxSpeed * (backRightPower / maxPower));
     }
-
     private void driveFieldRelative(double forward, double right, double rotate) {
         double input_angle = Math.atan2(forward, right);
         double magnitude = Math.hypot(right, forward);
@@ -90,11 +86,32 @@ public class MecanumExample {
 
         drive(newForward, newRight, rotate);
     }
+    private void driveFieldRelative(double forward, double right, double rotate, double heading){
+        double input_angle = Math.atan2(forward, right);
+        double magnitude = Math.hypot(right, forward);
 
+        double movement_angle = AngleUnit.normalizeRadians(input_angle - heading);
 
+        double newForward = magnitude * Math.sin(movement_angle);
+        double newRight = magnitude * Math.cos(movement_angle);
+
+        drive(newForward, newRight, rotate);
+    }
     public void setRelativeDriveWithIMU(HubIMUExample input_imu){
         imu = input_imu;
         imuSet = true;
         useFieldRelativeDrive = true;
+        drive_mode = DriveMode.FIELD_RELATIVE_IMU;
+    }
+    public void setDriveMode(DriveMode input_drive_mode){
+        drive_mode = input_drive_mode;
+    }
+    public void getTelemetry(Telemetry telemetry){
+        telemetry.addLine("CURRENT DRIVETRAIN SETTINGS:");
+        telemetry.addData("FRONT LEFT", front_left_direction);
+        telemetry.addData("FRONT RIGHT", front_right_direction);
+        telemetry.addData("BACK LEFT", back_left_direction);
+        telemetry.addData("BACK RIGHT", back_right_direction);
+        telemetry.addData("DRIVE MODE", drive_mode);
     }
 }
