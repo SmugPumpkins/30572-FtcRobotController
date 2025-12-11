@@ -1,13 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.utils.Config.PINPOINT;
-import static org.firstinspires.ftc.teamcode.utils.Constants.FORWARD;
+
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
-public class Navigate_v1 {
+public class Navigate_v2 {
     private GoBildaPinpointDriver pinpoint;
     MecanumDriveTrain drivetrain = null;
     private double target_x = 0;
