@@ -6,14 +6,15 @@ import static org.firstinspires.ftc.teamcode.utils.Config.*;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class PinpointExample {
     private GoBildaPinpointDriver pinpoint;
-    private double x_offset = -84; // in mm
-    private double y_offset = -168; // in mm
+    private double x_offset = 138; // in mm
+    private double y_offset = -82; // in mm
     private GoBildaPinpointDriver.EncoderDirection x_direction = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     private GoBildaPinpointDriver.EncoderDirection y_direction = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     public void init(HardwareMap hardwareMap){
@@ -31,6 +32,12 @@ public class PinpointExample {
     }
     public Pose2D position(){
         return pinpoint.getPosition();
+    }
+    public void getTelemetry(Telemetry telemetry){
+        telemetry.addLine("POSITION DATA - PINPOINT");
+        telemetry.addData("Relative X", pinpoint.getPosition().getX(DistanceUnit.INCH));
+        telemetry.addData("Relative Y", pinpoint.getPosition().getY(DistanceUnit.INCH));
+        telemetry.addData("Heading", pinpoint.getPosition().getX(DistanceUnit.INCH));
     }
     public void resetPinpointPosition(){
         pinpoint.setPosition(new Pose2D(DistanceUnit.INCH, 0, 0, AngleUnit.DEGREES, 0));

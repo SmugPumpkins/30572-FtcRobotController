@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.examples;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -20,14 +21,14 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 import java.util.List;
 public class AprilTagLocalizationExample {
     private static final boolean USE_WEBCAM = true;
-    private Position cameraPosition = new Position (
-            DistanceUnit.INCH,
-            0,
-            0,
-            0,
+    private final Position cameraPosition = new Position (
+            DistanceUnit.MM,
+            140,
+            -170,
+            400,
             0
     );
-    private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(
+    private final YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(
             AngleUnit.DEGREES,
             0,
             -80,
@@ -113,6 +114,14 @@ public class AprilTagLocalizationExample {
         if (tag == null) return 0;
         return tag.ftcPose.range;
     }
+    public void getTelemetry(Telemetry telemetry){
+        telemetry.addLine("ROBOT POSITION - WEBCAM 1");
+        telemetry.addData("Absolute X", getRobotPosition().x);
+        telemetry.addData("Absolute Y", getRobotPosition().y);
+        telemetry.addData("Heading", getRobotOrientation().getYaw(AngleUnit.DEGREES));
+        telemetry.addData("Distance to Goal", getDistanceToGoal());
+        telemetry.addData("Number of Tags", getNumberOfTags());
+    }
     public void setDecimation(int decimation){
         // Adjust Image Decimation to trade-off detection-range for detection-rate.
         // eg: Some typical detection data using a Logitech C920 WebCam
@@ -191,3 +200,4 @@ private void updateDetections(){
         return portal;
     }
 }
+

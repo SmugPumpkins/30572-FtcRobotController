@@ -27,7 +27,6 @@ public class LaunchSystemExample {
         useAprilTagSensor = true;
     }
     public void init(HardwareMap hardwareMap){
-        aprilTagSensor.init(hardwareMap);
         flywheel.init(hardwareMap);
         feeder.init(hardwareMap);
     }
