@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.utils.Constants.FORWARD;
 
+import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
@@ -21,6 +22,7 @@ public class Navigate_v1 {
             return false;
         }
     }
+    public void setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods goBILDA_4_BAR_POD)
     public void init(){
         coords = new CoordinateSystem(hardware_map);
         drivetrain = new MecanumDriveTrain(hardware_map);
