@@ -32,6 +32,12 @@ public class Navigate_v2 {
             return false;
         }
     }
+    public void setTarget_x(double input_target_x){
+        target_x = input_target_x;
+    }
+    public void setTarget_y(double input_target_y){
+        target_y = input_target_y;
+    }
     public void setEncoderResolution(GoBildaPinpointDriver.GoBildaOdometryPods goBILDA_4_BAR_POD){
     }
     public void resetPinpointPosition(){
