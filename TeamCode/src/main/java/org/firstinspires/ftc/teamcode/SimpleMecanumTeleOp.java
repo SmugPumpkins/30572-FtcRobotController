@@ -14,7 +14,7 @@ public class SimpleMecanumTeleOp extends OpMode {
     @Override
     public void init() {
         drivetrain = new MecanumDriveTrain(hardwareMap);
-        drivetrain.init(FORWARD, REVERSE, FORWARD, FORWARD);
+        drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
     }
 
     @Override
