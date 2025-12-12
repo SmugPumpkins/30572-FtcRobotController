@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
@@ -72,6 +73,10 @@ public class LocalizationManager {
                 april_tag_oriented = false;
             }
         }
+    }
+    public void getTelemetry(Telemetry telemetry){
+        pinpoint.getTelemetry(telemetry);
+        tag.getTelemetry(telemetry);
     }
     private Pose2D aprilTagPosition2D(){
         Pose3D position = tag.position();
