@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.utils.Config.*;
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -17,10 +18,10 @@ public class MecanumExample {
     private HubIMUExample imu;
     private boolean useFieldRelativeDrive = false;
     private boolean imuSet = false;
-    private final DcMotor.Direction front_left_direction = DcMotor.Direction.FORWARD;
-    private final DcMotor.Direction front_right_direction = DcMotor.Direction.FORWARD;
+    private final DcMotor.Direction front_left_direction = DcMotor.Direction.REVERSE;
+    private final DcMotor.Direction front_right_direction = DcMotor.Direction.REVERSE;
     private final DcMotor.Direction back_left_direction = DcMotor.Direction.FORWARD;
-    private final DcMotor.Direction back_right_direction = DcMotor.Direction.FORWARD;
+    private final DcMotor.Direction back_right_direction = DcMotor.Direction.REVERSE;
     public enum DriveMode {
         ROBOT_RELATIVE,
         FIELD_RELATIVE_IMU,
@@ -56,9 +57,9 @@ public class MecanumExample {
 
     public void drive(double forward, double right, double rotate){
         double frontLeftPower = forward + right + rotate;
-        double frontRightPower = forward - right - rotate;
+        double frontRightPower = forward - right + rotate;
         double backRightPower = forward + right - rotate;
-        double backLeftPower = forward - right + rotate;
+        double backLeftPower = forward - right - rotate;
 
         double maxPower = 1.0;
         double maxSpeed = 1.0;

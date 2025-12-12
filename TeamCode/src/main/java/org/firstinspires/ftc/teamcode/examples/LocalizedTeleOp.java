@@ -14,7 +14,7 @@ public class LocalizedTeleOp extends OpMode {
     public void init() {
         localization.init(hardwareMap);
         drivetrain.init(hardwareMap);
-        drivetrain.setDriveMode(MecanumExample.DriveMode.FIELD_RELATIVE_LOCALIZATION);
+        drivetrain.setDriveMode(MecanumExample.DriveMode.ROBOT_RELATIVE);
         launcher.init(hardwareMap);
         localization.setAlliance(BLUE_ALLIANCE);
     }
@@ -22,7 +22,7 @@ public class LocalizedTeleOp extends OpMode {
     @Override
     public void loop() {
         localization.run();
-        drivetrain.run(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, localization.getHeading());
+        drivetrain.run(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         launcher.setDistance(localization.goalDistance());
         launcher.launch(gamepad1.right_trigger > 0);
         launcher.setLauncherToIdle(gamepad2.x || gamepad1.x);
