@@ -13,8 +13,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 
 public class PinpointExample {
     private GoBildaPinpointDriver pinpoint;
-    private double x_offset = 138; // in mm
-    private double y_offset = -82; // in mm
+    private double x_offset = -82; // in mm
+    private double y_offset = 138; // in mm
     private GoBildaPinpointDriver.EncoderDirection x_direction = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     private GoBildaPinpointDriver.EncoderDirection y_direction = GoBildaPinpointDriver.EncoderDirection.FORWARD;
     public void init(HardwareMap hardwareMap){

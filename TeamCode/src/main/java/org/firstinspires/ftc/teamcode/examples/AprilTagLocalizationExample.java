@@ -24,7 +24,7 @@ public class AprilTagLocalizationExample {
     private final Position cameraPosition = new Position (
             DistanceUnit.MM,
             140,
-            -170,
+            170,
             400,
             0
     );
@@ -115,10 +115,15 @@ public class AprilTagLocalizationExample {
         return tag.ftcPose.range;
     }
     public void getTelemetry(Telemetry telemetry){
+        Pose3D pos = position();
         telemetry.addLine("ROBOT POSITION - WEBCAM 1");
-        telemetry.addData("Absolute X", getRobotPosition().x);
-        telemetry.addData("Absolute Y", getRobotPosition().y);
-        telemetry.addData("Heading", getRobotOrientation().getYaw(AngleUnit.DEGREES));
+        if (pos == null) {
+            telemetry.addLine("No tags are visible...");
+            return;
+        };
+        telemetry.addData("Absolute X", pos.getPosition().x);
+        telemetry.addData("Absolute Y", pos.getPosition().x);
+        telemetry.addData("Heading", pos.getOrientation().getYaw(AngleUnit.DEGREES));
         telemetry.addData("Distance to Goal", getDistanceToGoal());
         telemetry.addData("Number of Tags", getNumberOfTags());
     }
