@@ -28,9 +28,9 @@ public class AprilTagLocalizationExample {
     private static final boolean USE_WEBCAM = true;
     private final Position cameraPosition = new Position (
             DistanceUnit.MM,
-            140,
-            170,
-            400,
+            0,
+            0,
+            0,
             0
     );
     private final YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(
