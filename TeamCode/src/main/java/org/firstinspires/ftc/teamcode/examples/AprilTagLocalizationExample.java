@@ -9,10 +9,13 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Quaternion;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
+import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import static org.firstinspires.ftc.teamcode.utils.Config.*;
@@ -40,6 +43,7 @@ public class AprilTagLocalizationExample {
     private List<AprilTagDetection> currentDetections;
     private final int BLUE_GOAL_TAG_ID = BLUE_ALLIANCE; // 20
     private final int RED_GOAL_TAG_ID = RED_ALLIANCE; // 24
+    private AprilTagLibrary library= AprilTagGameDatabase.getDecodeTagLibrary();
     public void init(HardwareMap hardwareMap){
         aprilTag = buildCamera();
         visionPortal = buildVisionPortal(hardwareMap);
@@ -49,19 +53,21 @@ public class AprilTagLocalizationExample {
         updateDetections();
     }
     public Position getRobotPosition(){
+        AprilTagMetadata meta = null;
         if (currentDetections == null || currentDetections.isEmpty()) return null;
         AprilTagDetection tag = null;
         for (AprilTagDetection d : currentDetections) {
             if (d.id == BLUE_GOAL_TAG_ID || d.id == RED_GOAL_TAG_ID) {
                 tag = d;
+                meta = library.lookupTag(d.id);
                 break;
             }
         }
         if (tag == null) return null;
         if (tag.robotPose.getPosition() == null) return null;
         // robot relative to tag
-        double robot_x = tag.robotPose.getPosition().x;
-        double robot_y = tag.robotPose.getPosition().y;
+        double robot_x = tag.robotPose.getPosition().x + meta.fieldPosition.get(0);
+        double robot_y = tag.robotPose.getPosition().y+ meta.fieldPosition.get(1);
         return new Position(
                 DistanceUnit.INCH,
                 robot_x,
@@ -71,17 +77,22 @@ public class AprilTagLocalizationExample {
         );
     }
     public YawPitchRollAngles getRobotOrientation(){
+        AprilTagMetadata meta = null;
         if (currentDetections == null || currentDetections.isEmpty()) return null;
         AprilTagDetection tag = null;
         for (AprilTagDetection d : currentDetections) {
             if (d.id == BLUE_GOAL_TAG_ID || d.id == RED_GOAL_TAG_ID) {
                 tag = d;
+                meta = library.lookupTag(d.id);
                 break;
             }
         }
         if (tag == null) return null;
         if (tag.robotPose.getOrientation() == null) return null;
-        double robot_yaw = tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES);
+        double robot_yaw = tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES) + quaternionToYawDegrees(meta.fieldOrientation) + 180;
+        robot_yaw %= 360;
+        robot_yaw -= 180;
+
         return new YawPitchRollAngles(
                 AngleUnit.DEGREES,
                 robot_yaw,
@@ -198,6 +209,19 @@ private void updateDetections(){
         // Build the Vision Portal, using the above settings.
         portal = builder.build();
         return portal;
+    }
+    private double quaternionToYawDegrees(Quaternion q) {
+        double w = q.w;
+        double x = q.x;
+        double y = q.y;
+        double z = q.z;
+
+        double yawRad = Math.atan2(
+                2.0 * (w * z + x * y),
+                1.0 - 2.0 * (y * y + z * z)
+        );
+
+        return Math.toDegrees(yawRad);
     }
 }
 
