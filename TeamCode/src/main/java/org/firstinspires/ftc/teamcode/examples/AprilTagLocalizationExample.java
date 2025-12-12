@@ -133,7 +133,7 @@ public class AprilTagLocalizationExample {
             return;
         };
         telemetry.addData("Absolute X", pos.getPosition().x);
-        telemetry.addData("Absolute Y", pos.getPosition().x);
+        telemetry.addData("Absolute Y", pos.getPosition().y);
         telemetry.addData("Heading", pos.getOrientation().getYaw(AngleUnit.DEGREES));
         telemetry.addData("Distance to Goal", getDistanceToGoal());
         telemetry.addData("Number of Tags", getNumberOfTags());
