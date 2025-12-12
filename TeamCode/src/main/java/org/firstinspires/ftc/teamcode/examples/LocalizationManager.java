@@ -75,7 +75,7 @@ public class LocalizationManager {
         }
     }
     public void getTelemetry(Telemetry telemetry){
-        pinpoint.getTelemetry(telemetry);
+        // pinpoint.getTelemetry(telemetry);
         tag.getTelemetry(telemetry);
     }
     private Pose2D aprilTagPosition2D(){

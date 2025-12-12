@@ -16,6 +16,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
 import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagMetadata;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseFtc;
+import org.firstinspires.ftc.vision.apriltag.AprilTagPoseRaw;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import static org.firstinspires.ftc.teamcode.utils.Config.*;
@@ -66,8 +68,8 @@ public class AprilTagLocalizationExample {
         if (tag == null) return null;
         if (tag.robotPose.getPosition() == null) return null;
         // robot relative to tag
-        double robot_x = tag.robotPose.getPosition().x + meta.fieldPosition.get(0);
-        double robot_y = tag.robotPose.getPosition().y+ meta.fieldPosition.get(1);
+        double robot_x = tag.robotPose.getPosition().x;
+        double robot_y = tag.robotPose.getPosition().y;
         return new Position(
                 DistanceUnit.INCH,
                 robot_x,
@@ -89,9 +91,7 @@ public class AprilTagLocalizationExample {
         }
         if (tag == null) return null;
         if (tag.robotPose.getOrientation() == null) return null;
-        double robot_yaw = tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES) + quaternionToYawDegrees(meta.fieldOrientation) + 180;
-        robot_yaw %= 360;
-        robot_yaw -= 180;
+        double robot_yaw = tag.robotPose.getOrientation().getYaw(AngleUnit.DEGREES);
 
         return new YawPitchRollAngles(
                 AngleUnit.DEGREES,
@@ -113,6 +113,30 @@ public class AprilTagLocalizationExample {
         if (tag == null) return null;
         return tag.robotPose;
     }
+    public AprilTagPoseFtc ftcPosition(){
+        if (currentDetections == null || currentDetections.isEmpty()) return null;
+        AprilTagDetection tag = null;
+        for (AprilTagDetection d : currentDetections) {
+            if (d.id == BLUE_GOAL_TAG_ID || d.id == RED_GOAL_TAG_ID) {
+                tag = d;
+                break;
+            }
+        }
+        if (tag == null) return null;
+        return tag.ftcPose;
+    }
+    public AprilTagPoseRaw rawPosition(){
+        if (currentDetections == null || currentDetections.isEmpty()) return null;
+        AprilTagDetection tag = null;
+        for (AprilTagDetection d : currentDetections) {
+            if (d.id == BLUE_GOAL_TAG_ID || d.id == RED_GOAL_TAG_ID) {
+                tag = d;
+                break;
+            }
+        }
+        if (tag == null) return null;
+        return tag.rawPose;
+    }
     public double getDistanceToGoal(){
         if (currentDetections == null || currentDetections.isEmpty()) return 0;
         AprilTagDetection tag = null;
@@ -132,8 +156,14 @@ public class AprilTagLocalizationExample {
             telemetry.addLine("No tags are visible...");
             return;
         };
-        telemetry.addData("Absolute X", pos.getPosition().x);
-        telemetry.addData("Absolute Y", pos.getPosition().y);
+        telemetry.addData("Robot X", pos.getPosition().x);
+        telemetry.addData("Robot Y", pos.getPosition().y);
+        telemetry.addData("Raw X", rawPosition().x);
+        telemetry.addData("Raw Y", rawPosition().y);
+        telemetry.addData("FTC Pose X", ftcPosition().x);
+        telemetry.addData("FTC Pose Y", ftcPosition().y);
+        telemetry.addData("BLUE TAG X", library.lookupTag(20).fieldPosition.get(0));
+        telemetry.addData("BLUE TAG Y", library.lookupTag(20).fieldPosition.get(1));
         telemetry.addData("Heading", pos.getOrientation().getYaw(AngleUnit.DEGREES));
         telemetry.addData("Distance to Goal", getDistanceToGoal());
         telemetry.addData("Number of Tags", getNumberOfTags());
