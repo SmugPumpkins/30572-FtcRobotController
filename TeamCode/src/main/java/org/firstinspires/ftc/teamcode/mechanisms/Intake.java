@@ -19,7 +19,7 @@ public class Intake {
     }
 
     public void RunIntake() {
-        double power = 2.0;
+        double power = 1.0;
         intake.setPower(power);
     }
 }
