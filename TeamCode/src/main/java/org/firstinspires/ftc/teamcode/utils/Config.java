@@ -11,4 +11,6 @@ public final class Config {
     public static final String LEFT_FEEDER = "left_feeder";
     public static final String WEBCAM = "Webcam 1";
     public static final String PINPOINT = "pinpoint";
+    public static final String HOOD = "hood";
+    public static final String SPINDEXER = "spindexer";
 }

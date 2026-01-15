@@ -26,32 +26,32 @@ public class Flywheel {
         }
     }
     public boolean is_at_target(){
-        return true;
+        return launcher.getVelocity() >= target_velocity;
     }
 
     private boolean launcherActive = false;
 
     private DcMotorEx launcher = null;
-            public Flywheel(HardwareMap hardware_map, int launcher_direction){
-                launcher = hardware_map.get(DcMotorEx.class, LAUNCHER);
-                launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                if (launcher_direction == FORWARD){
-                    launcher.setDirection(DcMotorEx.Direction.FORWARD);
-                } else {
-                    launcher.setDirection(DcMotorEx.Direction.REVERSE);
-                }
-                min_velocity = 1350;
-                target_velocity = 1400;
-                launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public Flywheel(HardwareMap hardware_map, int launcher_direction){
+        launcher = hardware_map.get(DcMotorEx.class, LAUNCHER);
+        launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if (launcher_direction == FORWARD){
+            launcher.setDirection(DcMotorEx.Direction.FORWARD);
+        } else {
+            launcher.setDirection(DcMotorEx.Direction.REVERSE);
+        }
+        min_velocity = 1350;
+        target_velocity = 1400;
+        launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            }
-            public void run(){
-                if (launcherActive){
-                    launcher.setVelocity(target_velocity);
+    }
+    public void run(){
+        if (launcherActive){
+            launcher.setVelocity(target_velocity);
 
-                } else {
-                    launcher.setVelocity(0);
-                }
-            }
+        } else {
+            launcher.setVelocity(0);
+        }
+    }
 
 }
