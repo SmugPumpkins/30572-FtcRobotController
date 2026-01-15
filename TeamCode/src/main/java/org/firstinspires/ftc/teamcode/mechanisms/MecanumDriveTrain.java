@@ -63,10 +63,10 @@ public class MecanumDriveTrain {
     }
 
     public void drive(double forward, double right, double rotate) {
-        double frontLeftPower = forward + right + rotate;
-        double frontRightPower = forward - right - rotate;
-        double backRightPower = forward - right + rotate;
-        double backLeftPower = forward + right - rotate;
+        double frontLeftPower = forward + rotate + right;
+        double frontRightPower = forward - rotate - right;
+        double backRightPower = forward - rotate + right;
+        double backLeftPower = forward + rotate - right;
 
         double maxPower = 1.0;
         double maxSpeed = 1.0;
