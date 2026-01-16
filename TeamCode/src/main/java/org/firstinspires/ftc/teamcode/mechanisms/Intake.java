@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
-import static org.firstinspires.ftc.teamcode.utils.Config.INTAKE;
 import static org.firstinspires.ftc.teamcode.utils.Constants.FORWARD;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class Intake {
     private DcMotor intake = null;
