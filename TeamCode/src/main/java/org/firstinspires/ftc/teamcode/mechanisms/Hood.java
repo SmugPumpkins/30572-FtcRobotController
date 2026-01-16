@@ -1,14 +1,20 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
-// To do:
-// Find angle for home command
+
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
+import static org.firstinspires.ftc.teamcode.utils.Config.*;
+
 public class Hood {
-    public void home(){
 
+    private Servo hood = null;
+    public void home() {
+        hood.setPosition(0);
     }
-    public void angle(){
-
+    public void angle(int position){
+        hood.setPosition(position);
     }
-    public boolean is_in_pos(){
-        return true;
-    }
+        public Hood(HardwareMap hardware_map, int hood_position) {
+            hood = hardware_map.get(Servo.class, HOOD);
+            hood.setPosition(hood_position);
+        }
 }

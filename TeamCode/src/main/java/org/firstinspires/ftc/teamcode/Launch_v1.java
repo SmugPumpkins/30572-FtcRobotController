@@ -20,22 +20,22 @@ public class Launch_v1 {
         SHOOTING,
         STANDBY
     }
-
+    private int aim;
     private State state = State.IDLE;
     private Hood hood = null;
     private Feeder feed = null;
     private Flywheel flywheel = null;
     private HardwareMap hardware_map;
-    private Sort sort = new Sort();
+    private Sort sort = new Sort(hardware_map, 0);
 
     public Launch_v1(HardwareMap input_hardware_map) {
         hardware_map = input_hardware_map;
     }
 
     public void init() {
-        hood = new Hood();
-        feed = new Feeder();
-        sort = new Sort();
+        hood = new Hood(hardware_map, 0);
+        feed = new Feeder(hardware_map);
+        sort = new Sort(hardware_map, 0);
         flywheel = new Flywheel(hardware_map, REVERSE);
     }
 
@@ -49,7 +49,8 @@ public class Launch_v1 {
             }
         }
         if (state == State.SPIN_UP) {
-            hood.angle();
+
+            hood.angle(aim);
             feed.down();
             flywheel.turnMotorOn(true);
             sort.slot_left(gamepad1.left_bumper);
@@ -71,7 +72,7 @@ public class Launch_v1 {
             }
         }
         if (state == State.STANDBY) {
-            hood.angle();
+            hood.angle(aim);
             feed.down();
             flywheel.turnMotorOn(true);
             sort.slot_left(gamepad1.left_bumper);

@@ -12,5 +12,4 @@ public final class Config {
     public static final String WEBCAM = "Webcam 1";
     public static final String PINPOINT = "pinpoint";
     public static final String INTAKE = "intake";
-    public static final String SPINSORTER = "spin_sorter";
 }
