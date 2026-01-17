@@ -17,9 +17,10 @@ public class SimpleMecanumTeleOp extends OpMode {
     @Override
     public void init() {
         drivetrain = new MecanumDriveTrain(hardwareMap);
+        intake = new Intake(hardwareMap);
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
-        telemetry.addLine("V1");
+        telemetry.addLine("V2");
     }
 
     @Override
@@ -28,8 +29,11 @@ public class SimpleMecanumTeleOp extends OpMode {
         if (gamepad1.a) {
             drivetrain.drive(0, 0, 0);
         }
-        if (gamepad1.left_bumper) {
+        if (gamepad1.leftBumperWasPressed()) {
             intake.RunIntake();
+        }
+        if (gamepad1.leftBumperWasReleased()) {
+            intake.StopIntake();
         }
     }
 }
