@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.utils.Config.*;
 public class Hood {
 
     private Servo hood = null;
+    private int hood_position;
     public void home() {
         hood.setPosition(0);
     }
