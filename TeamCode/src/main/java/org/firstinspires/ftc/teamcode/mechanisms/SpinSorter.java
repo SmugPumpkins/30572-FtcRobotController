@@ -14,13 +14,13 @@ public class SpinSorter {
     }
     public void SpinLeft(boolean button) {
         if (button) {
-            spindexer_position = spindexer_position + 0.120;
+            spindexer_position = 0.33;
         }
         spindexer.setPosition(spindexer_position);
     }
     public void SpinRight(boolean button) {
         if (button) {
-            spindexer_position = spindexer_position - 0.120;
+            spindexer_position = 0.66;
         }
         this.spindexer.setPosition(spindexer_position);
     }
