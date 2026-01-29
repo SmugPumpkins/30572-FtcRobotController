@@ -36,7 +36,7 @@ public class SimpleMecanumTeleOp extends OpMode {
         if (gamepad1.leftBumperWasReleased()) {
             intake.StopIntake();
         }
-        if (gamepad2.rightBumperWasPressed()) {
+        if (gamepad2.leftBumperWasPressed()) {
             sorter.SpinLeft();
         }
         if (gamepad2.rightBumperWasPressed()) {

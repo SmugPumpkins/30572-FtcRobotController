@@ -28,16 +28,16 @@ public class MecanumDriveTrain {
         front_right = hardware_map.get(DcMotor.class, FRONT_RIGHT);
         back_left = hardware_map.get(DcMotor.class, BACK_LEFT);
         back_right = hardware_map.get(DcMotor.class, BACK_RIGHT);
-        imu = hardware_map.get(IMU.class, ONBOARD_IMU);
+        //imu = hardware_map.get(IMU.class, ONBOARD_IMU);
         // This needs to be changed to match the orientation on your robot
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
-        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+        //RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
+                //RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+        //RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
+                //RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
 
-        RevHubOrientationOnRobot orientationOnRobot = new
-                RevHubOrientationOnRobot(logoDirection, usbDirection);
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
+        //RevHubOrientationOnRobot orientationOnRobot = new
+                //RevHubOrientationOnRobot(logoDirection, usbDirection);
+        //imu.initialize(new IMU.Parameters(orientationOnRobot));
     }
 
     public void init(int front_left_direction, int front_right_direction, int back_left_direction, int back_right_direction) {
@@ -83,16 +83,16 @@ public class MecanumDriveTrain {
         back_right.setPower(maxSpeed * (backRightPower / maxPower));
     }
 
-    public void driveFieldRelative(double forward, double right, double rotate) {
-        double theta = Math.atan2(forward, right);
-        double r = Math.hypot(right, forward);
+    //public void driveFieldRelative(double forward, double right, double rotate) {
+        //double theta = Math.atan2(forward, right);
+        //double r = Math.hypot(right, forward);
 
-        theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        //theta = AngleUnit.normalizeRadians(theta -
+                //imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
 
-        double newForward = r * Math.sin(theta);
-        double newRight = r * Math.cos(theta);
+        //double newForward = r * Math.sin(theta);
+        //double newRight = r * Math.cos(theta);
 
-        drive(newForward, newRight, rotate);
-    }
+        //drive(newForward, newRight, rotate);
+    //}
 }
