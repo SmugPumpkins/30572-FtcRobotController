@@ -21,7 +21,7 @@ public class SimpleMecanumTeleOp extends OpMode {
         sorter = new SpinSorter(hardwareMap, 0);
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
-        telemetry.addLine("V2");
+        telemetry.addLine("V9");
     }
 
     @Override
@@ -36,12 +36,21 @@ public class SimpleMecanumTeleOp extends OpMode {
         if (gamepad1.leftBumperWasReleased()) {
             intake.StopIntake();
         }
-        if (gamepad2.leftBumperWasPressed()) {
-            sorter.SpinLeft();
+        if (gamepad1.dpadDownWasPressed()) {
+            sorter.SpinLeft(true);
         }
-        if (gamepad2.rightBumperWasPressed()) {
-            sorter.SpinRight();
+        if (gamepad1.dpadUpWasPressed()) {
+            sorter.SpinRight(true);
         }
+        if (gamepad1.dpadDownWasReleased()) {
+            sorter.SpinLeft(false);
+            sorter.init();
+        }
+        if (gamepad1.dpadUpWasReleased()) {
+            sorter.SpinRight(false);
+            sorter.init();
+        }
+
 
     }
 }

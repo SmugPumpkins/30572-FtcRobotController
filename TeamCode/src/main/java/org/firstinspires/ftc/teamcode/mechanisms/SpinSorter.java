@@ -7,20 +7,26 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 public class SpinSorter {
     private Servo spindexer = null;
-    private int spindexer_position;
+    private double spindexer_position;
 
     public void init() {
         spindexer.setPosition(spindexer_position);
     }
-    public void SpinLeft() {
-        spindexer_position = spindexer_position + 120;
-    }
-    public void SpinRight() {
-        spindexer_position = spindexer_position - 120;
-    }
-    public SpinSorter(HardwareMap hardware_map, int spindexer_position) {
-        spindexer = hardware_map.get(Servo.class, SPINDEXER);
+    public void SpinLeft(boolean button) {
+        if (button) {
+            spindexer_position = spindexer_position + 0.120;
+        }
         spindexer.setPosition(spindexer_position);
+    }
+    public void SpinRight(boolean button) {
+        if (button) {
+            spindexer_position = spindexer_position - 0.120;
+        }
+        this.spindexer.setPosition(spindexer_position);
+    }
+    public SpinSorter(HardwareMap hardware_map, double spindexer_position) {
+        this.spindexer_position = spindexer_position;
+        spindexer = hardware_map.get(Servo.class, SPINDEXER);
     }
 
 }
