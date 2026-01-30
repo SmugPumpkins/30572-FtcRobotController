@@ -2,12 +2,14 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.utils.Config.PINPOINT;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.examples.MecanumExample;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
+@Disabled
 public class Navigate_v2 {
     private GoBildaPinpointDriver pinpoint;
     MecanumExample drivetrain =new MecanumExample();
