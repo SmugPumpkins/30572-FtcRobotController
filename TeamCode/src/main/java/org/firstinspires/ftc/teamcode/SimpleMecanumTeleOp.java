@@ -18,10 +18,10 @@ public class SimpleMecanumTeleOp extends OpMode {
     public void init() {
         drivetrain = new MecanumDriveTrain(hardwareMap);
         intake = new Intake(hardwareMap);
-        sorter = new SpinSorter(hardwareMap, 0);
+        sorter = new SpinSorter(hardwareMap, 0.5);
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
-        telemetry.addLine("V9");
+        telemetry.addLine("V12");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class SimpleMecanumTeleOp extends OpMode {
             sorter.SpinRight(false);
             sorter.init();
         }
-
+        telemetry.addData("Position: ", sorter.spindexer_position);
 
     }
 }
