@@ -12,9 +12,12 @@ public class SpinSorter {
     public void init() {
         spindexer.setPosition(spindexer_position);
     }
+    private final double[] positions = {0.05, 0.49, 0.93};
+    private int index = 0;
     public void SpinLeft(boolean button) {
         if (button) {
-            spindexer_position = spindexer_position + 0.005;
+            index = (index + 1) % positions.length;
+            spindexer_position = positions[index];
         }
         spindexer.setPosition(spindexer_position);
     }
@@ -22,10 +25,12 @@ public class SpinSorter {
 
     public void SpinRight(boolean button) {
         if (button) {
-            spindexer_position = spindexer_position - 0.005;
+            index = (index - 1 + positions.length) % positions.length;
+            spindexer_position = positions[index];
         }
         this.spindexer.setPosition(spindexer_position);
     }
+
     public SpinSorter(HardwareMap hardware_map, double spindexer_position) {
         this.spindexer_position = spindexer_position;
         spindexer = hardware_map.get(Servo.class, SPINDEXER);

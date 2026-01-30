@@ -18,4 +18,17 @@ public class Hood {
             hood = hardware_map.get(Servo.class, HOOD);
             hood.setPosition(hood_position);
         }
+        public void hood_up(boolean button){
+            if (button){
+                hood_position += 0.005;
+            }
+            hood.setPosition(hood_position);
+
+        }
+        public void hood_down(boolean button){
+        if (button){
+            hood_position -= 0.005;
+        }
+        hood.setPosition(hood_position);
+        }
 }
