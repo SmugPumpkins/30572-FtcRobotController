@@ -7,19 +7,21 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 import org.firstinspires.ftc.teamcode.mechanisms.ArcadeDrivetrain;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
-
+import org.firstinspires.ftc.teamcode.mechanisms.SpinSorter;
 @TeleOp
 public class SimpleMecanumTeleOp extends OpMode {
     MecanumDriveTrain drivetrain = null;
     Intake intake = null;
-
+    SpinSorter sorter = null;
 
     @Override
     public void init() {
         drivetrain = new MecanumDriveTrain(hardwareMap);
+        intake = new Intake(hardwareMap);
+        sorter = new SpinSorter(hardwareMap, 0.5);
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
-        telemetry.addLine("V1");
+        telemetry.addLine("V12");
     }
 
     @Override
@@ -28,8 +30,27 @@ public class SimpleMecanumTeleOp extends OpMode {
         if (gamepad1.a) {
             drivetrain.drive(0, 0, 0);
         }
-        if (gamepad1.left_bumper) {
+        if (gamepad1.leftBumperWasPressed()) {
             intake.RunIntake();
         }
+        if (gamepad1.leftBumperWasReleased()) {
+            intake.StopIntake();
+        }
+        if (gamepad1.dpadDownWasPressed()) {
+            sorter.SpinLeft(true);
+        }
+        if (gamepad1.dpadUpWasPressed()) {
+            sorter.SpinRight(true);
+        }
+        if (gamepad1.dpadDownWasReleased()) {
+            sorter.SpinLeft(false);
+            sorter.init();
+        }
+        if (gamepad1.dpadUpWasReleased()) {
+            sorter.SpinRight(false);
+            sorter.init();
+        }
+        telemetry.addData("Position: ", sorter.spindexer_position);
+
     }
 }

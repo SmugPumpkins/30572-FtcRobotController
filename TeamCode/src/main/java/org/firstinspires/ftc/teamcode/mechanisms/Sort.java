@@ -8,6 +8,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class Sort {
     private Servo spindexer = null;
     private double spindexer_position;
+    public void init() {
+        spindexer.setPosition(spindexer_position);
+    }
     public void slot_left(boolean button){
         if(button) {
            // spindexer_position = spindexer_position + 0.120;
