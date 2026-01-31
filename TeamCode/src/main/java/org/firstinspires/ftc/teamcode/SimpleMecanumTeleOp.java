@@ -34,14 +34,14 @@ public class SimpleMecanumTeleOp extends OpMode {
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
         drivetrain.driveFieldRelative(0, 0, 0);
-        telemetry.addLine("V43");
+        telemetry.addLine("V45");
     }
 
     @Override
     public void loop() {
-        double forward = -gamepad1.left_stick_y;
+        double forward = gamepad1.left_stick_y;
         double right = gamepad1.left_stick_x;
-        double rotate = gamepad1.right_stick_x;
+        double rotate = -gamepad1.right_stick_x;
         drivetrain.driveFieldRelative(forward, right, rotate);
         if (gamepad1.a) {
             drivetrain.resetYaw();
