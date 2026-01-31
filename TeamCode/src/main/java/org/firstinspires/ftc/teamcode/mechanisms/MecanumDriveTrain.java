@@ -95,4 +95,8 @@ public class MecanumDriveTrain {
 
         drive(newForward, newRight, rotate);
     }
+
+    public void resetYaw() {
+        imu.resetYaw();
+    }
 }

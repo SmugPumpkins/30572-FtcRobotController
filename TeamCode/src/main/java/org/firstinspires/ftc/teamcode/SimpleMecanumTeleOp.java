@@ -41,7 +41,7 @@ public class SimpleMecanumTeleOp extends OpMode {
     public void loop() {
         drivetrain.driveFieldRelative(gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x);
         if (gamepad1.a) {
-            drivetrain.driveFieldRelative(0, 0, 0);
+            drivetrain.resetYaw();
         }
         if (gamepad1.leftBumperWasPressed()) {
             intake.RunIntake();
