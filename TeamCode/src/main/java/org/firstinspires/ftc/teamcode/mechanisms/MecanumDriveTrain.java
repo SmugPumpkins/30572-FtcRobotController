@@ -64,10 +64,10 @@ public class MecanumDriveTrain {
     }
 
     public void drive(double forward, double right, double rotate) {
-        double frontLeftPower = forward + right + rotate;
-        double frontRightPower = forward - right - rotate;
-        double backRightPower = forward - right + rotate;
-        double backLeftPower = forward + right - rotate;
+        double frontLeftPower = forward + rotate + right;
+        double frontRightPower = forward - rotate - right;
+        double backRightPower = forward - rotate + right;
+        double backLeftPower = forward + rotate - right;
 
         double maxPower = 1.0;
         double maxSpeed = 1.0;
@@ -84,11 +84,12 @@ public class MecanumDriveTrain {
     }
 
     public void driveFieldRelative(double forward, double right, double rotate) {
+        double robotYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+
         double theta = Math.atan2(forward, right);
         double r = Math.hypot(right, forward);
 
-        theta = AngleUnit.normalizeRadians(theta -
-                imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS));
+        theta = AngleUnit.normalizeRadians(theta + robotYaw);
 
         double newForward = r * Math.sin(theta);
         double newRight = r * Math.cos(theta);
