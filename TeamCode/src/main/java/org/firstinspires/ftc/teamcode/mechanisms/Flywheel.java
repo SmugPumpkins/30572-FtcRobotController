@@ -13,8 +13,8 @@ public class Flywheel {
     }
 
 
-    private int min_velocity;
-    private int target_velocity;
+    public int min_velocity;
+    public int target_velocity;
 
     public void turnMotorOn(boolean button) {
         if (button) {
@@ -48,8 +48,8 @@ public class Flywheel {
         } else {
             launcherTwo.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        min_velocity = 1350;
-        target_velocity = 1400;
+        min_velocity = 950;
+        target_velocity = 1000;
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcherTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 

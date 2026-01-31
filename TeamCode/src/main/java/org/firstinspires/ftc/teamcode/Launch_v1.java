@@ -39,7 +39,8 @@ public class Launch_v1 {
     public void run(boolean shotPressed) {
         if (state == State.IDLE) {
             hood.home();
-            feed.down();
+            feed.down(true);
+            flywheel.turnMotorOn(false);
             flywheel.turnMotorOff(true);
             if (shotPressed) {
                 state = State.SPIN_UP;
@@ -48,27 +49,30 @@ public class Launch_v1 {
         if (state == State.SPIN_UP) {
 
             hood.angle(aim);
-            feed.down();
+            feed.down(true);
+            flywheel.turnMotorOff(true);
             flywheel.turnMotorOn(true);
             if (flywheel.is_at_target()) {
                 state = State.ACTIVATE;
             }
         }
         if (state == State.ACTIVATE) {
-            feed.up();
+            feed.down(false);
+            feed.up(true);
             if (feed.is_homed()) {
                 state = State.SHOOTING;
             }
         }
         if (state == State.SHOOTING) {
-            feed.down();
+            feed.up(false);
+            feed.down(true);
             if (feed.is_homed()) {
                 state = State.STANDBY;
             }
         }
         if (state == State.STANDBY) {
             hood.angle(aim);
-            feed.down();
+            feed.down(true);
             flywheel.turnMotorOn(true);
             if (gamepad1.b) {
                 state = State.IDLE;
