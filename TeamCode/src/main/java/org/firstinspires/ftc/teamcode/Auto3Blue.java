@@ -7,7 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
 
-@Autonomous(name = "Move forward, rotate, move forward again, shoot, then strafe off line", group = "Blue Auto")
+@Autonomous(name = "Auto3B", group = "Blue Auto")
 public class Auto3Blue extends OpMode {
     int step1 = 3000;
     int step2 = 500;
@@ -56,6 +56,8 @@ public class Auto3Blue extends OpMode {
         drive = new MecanumDriveTrain(hardwareMap);
         launch = new Launch_v1(hardwareMap);
         telemetry.addLine("V1");
+        telemetry.addLine("Blue alliance");
+        telemetry.addLine("Move forward, rotate, move forward again, shoot, then strafe off line");
         telemetry.addLine("Place robot on small triangle, facing forward");
         telemetry.update();
     }
