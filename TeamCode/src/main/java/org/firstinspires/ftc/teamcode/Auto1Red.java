@@ -7,13 +7,11 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
 
-@Autonomous(name = "Back up, shoot, then strafe off line", group = "Blue Auto")
-public class Auto2 extends OpMode {
-    int step1 = 2000;
-    int step2 = 1000;
+@Autonomous(name = "Strafe off line", group= "Red Auto")
+public class Auto1Red extends OpMode {
+    int step1 = 1000;
     private MecanumDriveTrain drive;
-    private Launch_v1 launch;
-    public void forward(long time){
+    public void forward(long time) throws InterruptedException {
         drive.drive(1, 0, 0);
         try {
             sleep(time);
@@ -22,7 +20,7 @@ public class Auto2 extends OpMode {
         }
         drive.drive(0, 0, 0);
     }
-    public void reverse(long time){
+    public void reverse(long time) throws InterruptedException {
         drive.drive(-1, 0, 0);
         try {
             sleep(time);
@@ -31,7 +29,7 @@ public class Auto2 extends OpMode {
         }
         drive.drive(0, 0, 0);
     }
-    public void rotate(long time, int direction) {
+    public void rotate(long time, int direction) throws InterruptedException {
         drive.drive(0, 0, direction);
         try {
             sleep(time);
@@ -52,18 +50,15 @@ public class Auto2 extends OpMode {
     @Override
     public void init() {
         drive = new MecanumDriveTrain(hardwareMap);
-        launch = new Launch_v1(hardwareMap);
         telemetry.addLine("V1");
-        telemetry.addLine("Place robot facing toward goal, on the line");
+        telemetry.addLine("Place robot on small triangle, facing forward");
         telemetry.update();
     }
 
 
     @Override
     public void start() {
-        reverse(step1);
-        launch.run(true);
-        strafe(step2, -1);
+        strafe(step1, 1);
     }
     @Override
     public void loop() {

@@ -8,7 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
 
 @Autonomous(name = "Strafe off line", group= "Blue Auto")
-public class Auto1 extends OpMode {
+public class Auto1Blue extends OpMode {
     int step1 = 1000;
     private MecanumDriveTrain drive;
     public void forward(long time) throws InterruptedException {
