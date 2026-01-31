@@ -27,16 +27,16 @@ import java.util.List;
 public class AprilTagLocalizationExample {
     private static final boolean USE_WEBCAM = true;
     private final Position cameraPosition = new Position (
-            DistanceUnit.MM,
-            140,
-            170,
-            400,
+            DistanceUnit.INCH,
+            0,
+            0,
+            0,
             0
     );
     private final YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(
             AngleUnit.DEGREES,
             0,
-            -80,
+            -85,
             0,
             0
     );
