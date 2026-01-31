@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.utils.Constants.FORWARD;
+import static org.firstinspires.ftc.teamcode.utils.Constants.REVERSE;
 import static java.lang.Thread.sleep;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -9,7 +11,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
 
 @Autonomous(name = "Auto1R", group= "Red Auto")
 public class Auto1Red extends OpMode {
-    int step1 = 1000;
+    int step1 = 500;
     private MecanumDriveTrain drive;
     public void forward(long time) throws InterruptedException {
         drive.drive(1, 0, 0);
@@ -54,6 +56,7 @@ public class Auto1Red extends OpMode {
         telemetry.addLine("Red alliance");
         telemetry.addLine("Strafe off line");
         telemetry.addLine("Place robot on small triangle, facing forward");
+        drive.init(REVERSE, FORWARD, REVERSE, FORWARD);
         telemetry.update();
     }
 
