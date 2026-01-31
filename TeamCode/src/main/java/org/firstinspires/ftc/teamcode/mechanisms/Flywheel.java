@@ -48,8 +48,8 @@ public class Flywheel {
         } else {
             launcherTwo.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        min_velocity = 5950;
-        target_velocity = 6000;
+        min_velocity =1150;
+        target_velocity = 1200;
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcherTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
