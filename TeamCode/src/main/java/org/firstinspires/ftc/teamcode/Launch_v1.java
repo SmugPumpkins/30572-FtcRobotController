@@ -38,7 +38,6 @@ public class Launch_v1 {
 
     public void run(boolean shotPressed) {
         if (state == State.IDLE) {
-            hood.home();
             feed.down(true);
             flywheel.turnMotorOn(false);
             flywheel.turnMotorOff(true);

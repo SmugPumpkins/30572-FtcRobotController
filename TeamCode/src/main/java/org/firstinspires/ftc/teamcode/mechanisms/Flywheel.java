@@ -32,8 +32,8 @@ public class Flywheel {
 
     private boolean launcherActive = false;
 
-    private DcMotorEx launcher = null;
-    private DcMotorEx launcherTwo = null;
+    public DcMotorEx launcher = null;
+    public DcMotorEx launcherTwo = null;
     public Flywheel(HardwareMap hardware_map, int launcher_direction, int launcherTwo_direction){
         launcher = hardware_map.get(DcMotorEx.class, shooterOne);
         launcherTwo = hardware_map.get(DcMotorEx.class, shooterTwo);
@@ -48,8 +48,8 @@ public class Flywheel {
         } else {
             launcherTwo.setDirection(DcMotorSimple.Direction.REVERSE);
         }
-        min_velocity = 950;
-        target_velocity = 1000;
+        min_velocity = 5950;
+        target_velocity = 6000;
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcherTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 

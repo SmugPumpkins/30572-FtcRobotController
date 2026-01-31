@@ -33,20 +33,35 @@ public class SimpleMecanumTeleOp extends OpMode {
         flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD);
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
-        telemetry.addLine("V27");
+        drivetrain.driveFieldRelative(0, 0, 0);
+        telemetry.addLine("V42");
     }
 
     @Override
     public void loop() {
-        drivetrain.drive(gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+        drivetrain.driveFieldRelative(gamepad1.left_stick_y, -gamepad1.left_stick_x, gamepad1.right_stick_x);
         if (gamepad1.a) {
-            drivetrain.drive(0, 0, 0);
+            drivetrain.driveFieldRelative(0, 0, 0);
         }
         if (gamepad1.leftBumperWasPressed()) {
             intake.RunIntake();
         }
         if (gamepad1.leftBumperWasReleased()) {
             intake.StopIntake();
+        }
+        if (gamepad2.dpadDownWasPressed()) {
+            sorter.SpinLeft(true);
+        }
+        if (gamepad2.dpadUpWasPressed()) {
+            sorter.SpinRight(true);
+        }
+        if (gamepad2.dpadDownWasReleased()) {
+            sorter.SpinLeft(false);
+            sorter.init();
+        }
+        if (gamepad2.dpadUpWasReleased()) {
+            sorter.SpinRight(false);
+            sorter.init();
         }
         if (gamepad1.dpadDownWasPressed()) {
             sorter.SpinLeft(true);
@@ -65,38 +80,37 @@ public class SimpleMecanumTeleOp extends OpMode {
         if (gamepad1.dpadLeftWasPressed()) {
             hood.hood_down(true);
         }
-        if (gamepad1.dpadRightWasPressed()) {
+        if (gamepad2.dpadRightWasPressed()) {
             hood.hood_up(true);
         }
-        if (gamepad1.dpadLeftWasReleased()) {
+        if (gamepad2.dpadLeftWasReleased()) {
             hood.hood_down(false);
         }
-        if (gamepad1.dpadRightWasReleased()) {
+        if (gamepad2.dpadRightWasReleased()) {
             hood.hood_up(false);
         }
-        if (gamepad1.rightBumperWasPressed()) {
-            launch.run(true);
-        }
+        //if (gamepad2.rightBumperWasPressed()) {
+            //launch.run(true);
+        //}
         //if (gamepad1.rightBumperWasReleased()) {
             //launch.run(false);
         //}
-        if (gamepad1.yWasPressed()) {
+        if (gamepad2.yWasPressed()) {
             servoArm.up(true);
-        }
-        if (gamepad1.aWasPressed()) {
+            servoArm.down(false);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            servoArm.up(false);
             servoArm.down(true);
         }
-        if (gamepad1.yWasReleased()) {
-            servoArm.up(false);
-        }
-        if (gamepad1.aWasReleased()) {
-            servoArm.down(false);
-        }
-        if (gamepad1.bWasPressed()) {
+        if (gamepad2.rightBumperWasPressed()) {
             flywheel.turnMotorOff(false);
             flywheel.turnMotorOn(true);
         }
-        if (gamepad1.xWasPressed()) {
+        if (gamepad2.leftBumperWasPressed()) {
             flywheel.turnMotorOn(false);
             flywheel.turnMotorOff(true);
         }
@@ -104,6 +118,9 @@ public class SimpleMecanumTeleOp extends OpMode {
         telemetry.addData("Position: ", sorter.spindexer_position);
         telemetry.addData("Target Velocity: ", flywheel.target_velocity);
         telemetry.addData("Minimum Velocity: ", flywheel.min_velocity);
+        telemetry.addData("Velocity of Flywheel Motor 1: ", flywheel.launcher.getVelocity());
+        telemetry.addData("Velocity of Flywheel Motor 2: ", flywheel.launcherTwo.getVelocity());
+        telemetry.addData("Hood Position: ", hood.hood_position);
         flywheel.run();
 
     }

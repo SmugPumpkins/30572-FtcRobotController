@@ -7,9 +7,9 @@ import static org.firstinspires.ftc.teamcode.utils.Config.*;
 public class Hood {
 
     private Servo hood = null;
-    private int hood_position;
+    public int hood_position;
     public void home() {
-        hood.setPosition(0);
+        hood.setPosition(0.5);
     }
     public void angle(int position){
         hood.setPosition(position);
@@ -20,14 +20,14 @@ public class Hood {
         }
         public void hood_up(boolean button){
             if (button){
-                hood_position += 0.005;
+                hood_position += 0.05;
             }
             hood.setPosition(hood_position);
 
         }
         public void hood_down(boolean button){
         if (button){
-            hood_position -= 0.005;
+            hood_position -= 0.05;
         }
         hood.setPosition(hood_position);
         }
