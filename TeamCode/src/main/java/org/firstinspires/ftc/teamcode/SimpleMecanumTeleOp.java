@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.SpinSorter;
 import org.firstinspires.ftc.teamcode.mechanisms.Hood;
 import org.firstinspires.ftc.teamcode.Launch_v1;
 import org.firstinspires.ftc.teamcode.mechanisms.Feeder;
+import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 @TeleOp
 public class SimpleMecanumTeleOp extends OpMode {
     MecanumDriveTrain drivetrain = null;
@@ -19,6 +20,7 @@ public class SimpleMecanumTeleOp extends OpMode {
     Hood hood = null;
     Launch_v1 launch = null;
     Feeder servoArm = null;
+    Flywheel flywheel = null;
 
     @Override
     public void init() {
@@ -28,9 +30,10 @@ public class SimpleMecanumTeleOp extends OpMode {
         hood = new Hood(hardwareMap, 0);
         launch = new Launch_v1(hardwareMap);
         servoArm = new Feeder(hardwareMap);
+        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD);
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
-        telemetry.addLine("V16");
+        telemetry.addLine("V27");
     }
 
     @Override
@@ -74,17 +77,34 @@ public class SimpleMecanumTeleOp extends OpMode {
         if (gamepad1.rightBumperWasPressed()) {
             launch.run(true);
         }
-        if (gamepad1.rightBumperWasReleased()) {
-            launch.run(false);
+        //if (gamepad1.rightBumperWasReleased()) {
+            //launch.run(false);
+        //}
+        if (gamepad1.yWasPressed()) {
+            servoArm.up(true);
         }
-        if (gamepad1.y) {
-            servoArm.up();
+        if (gamepad1.aWasPressed()) {
+            servoArm.down(true);
         }
-        if (gamepad1.a) {
-            servoArm.down();
+        if (gamepad1.yWasReleased()) {
+            servoArm.up(false);
+        }
+        if (gamepad1.aWasReleased()) {
+            servoArm.down(false);
+        }
+        if (gamepad1.bWasPressed()) {
+            flywheel.turnMotorOff(false);
+            flywheel.turnMotorOn(true);
+        }
+        if (gamepad1.xWasPressed()) {
+            flywheel.turnMotorOn(false);
+            flywheel.turnMotorOff(true);
         }
 
         telemetry.addData("Position: ", sorter.spindexer_position);
+        telemetry.addData("Target Velocity: ", flywheel.target_velocity);
+        telemetry.addData("Minimum Velocity: ", flywheel.min_velocity);
+        flywheel.run();
 
     }
 }
