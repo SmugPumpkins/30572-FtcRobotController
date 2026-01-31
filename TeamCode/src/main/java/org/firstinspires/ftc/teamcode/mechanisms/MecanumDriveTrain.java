@@ -4,6 +4,7 @@ import static org.firstinspires.ftc.teamcode.utils.Config.BACK_LEFT;
 import static org.firstinspires.ftc.teamcode.utils.Config.BACK_RIGHT;
 import static org.firstinspires.ftc.teamcode.utils.Config.FRONT_LEFT;
 import static org.firstinspires.ftc.teamcode.utils.Config.FRONT_RIGHT;
+import static org.firstinspires.ftc.teamcode.utils.Config.ONBOARD_IMU;
 import static org.firstinspires.ftc.teamcode.utils.Constants.FORWARD;
 
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
@@ -27,12 +28,12 @@ public class MecanumDriveTrain {
         front_right = hardware_map.get(DcMotor.class, FRONT_RIGHT);
         back_left = hardware_map.get(DcMotor.class, BACK_LEFT);
         back_right = hardware_map.get(DcMotor.class, BACK_RIGHT);
-        imu = hardware_map.get(IMU.class, "imu");
-        // This needs to be changed to match the orientation on your robot
+        imu = hardware_map.get(IMU.class, ONBOARD_IMU);
+        //This needs to be changed to match the orientation on your robot
         RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
-                RevHubOrientationOnRobot.LogoFacingDirection.LEFT;
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD;
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
 
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);

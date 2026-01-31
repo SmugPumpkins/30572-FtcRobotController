@@ -2,19 +2,23 @@ package org.firstinspires.ftc.teamcode;
 import static org.firstinspires.ftc.teamcode.utils.Config.PINPOINT;
 
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Pose2D;
 import org.firstinspires.ftc.teamcode.examples.MecanumExample;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
+@Disabled
 public class Navigate_v2 {
     private GoBildaPinpointDriver pinpoint;
     MecanumExample drivetrain =new MecanumExample();
     private double target_x = 0;
     private double target_y = 0;
+    private double target_rotation = 0;
     private int x_speed = 0;
     private int y_speed = 0;
+    private int rotate_speed = 0;
     private double x_offset = 138;
     private double y_offset = -82;
     private GoBildaPinpointDriver.EncoderDirection x_direction = GoBildaPinpointDriver.EncoderDirection.FORWARD;
@@ -31,6 +35,14 @@ public class Navigate_v2 {
         } else {
             return false;
         }
+    }
+    public double x_coord(){
+        if(pinpoint.getPosition()==null)return 0;
+        return pinpoint.getPosition().getX(DistanceUnit.MM);
+    }
+    public double y_coord(){
+        if(pinpoint.getPosition()==null)return 0;
+        return pinpoint.getPosition().getY(DistanceUnit.MM);
     }
     public void setTarget_x(double input_target_x){
         target_x = input_target_x;
@@ -52,20 +64,27 @@ public class Navigate_v2 {
     public void run(){
 
         if (pinpoint.getPosition().getX(DistanceUnit.MM) > target_x){
-            int x_speed = -1;
+            x_speed = 1;
         } else if (pinpoint.getPosition().getX(DistanceUnit.MM) < target_x){
-            int x_speed = 1;
+            x_speed = -1;
         } else{
-            int x_speed = 0;
+            x_speed = 0;
         }
         if (pinpoint.getPosition().getY(DistanceUnit.MM) > target_y){
-            int y_speed = -1;
+            y_speed = 1;
         } else if (pinpoint.getPosition().getY(DistanceUnit.MM) < target_y){
-            int y_speed = 1;
+            y_speed = -1;
         } else {
-            int y_speed = 0;
+            y_speed = 0;
         }
-        drivetrain.drive(y_speed, x_speed, 0);
+        if (pinpoint.getPosition().getHeading(AngleUnit.DEGREES) > target_rotation){
+            rotate_speed = -1;
+        } else if (pinpoint.getPosition().getHeading(AngleUnit.DEGREES) < target_rotation) {
+            rotate_speed = -1;
+        } else {
+            rotate_speed = 0;
+        }
+        drivetrain.drive(y_speed, x_speed, rotate_speed);
         pinpoint.update();
         pinpoint.getPosition();
     }

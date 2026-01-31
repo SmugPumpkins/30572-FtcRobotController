@@ -10,7 +10,6 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import org.firstinspires.ftc.teamcode.mechanisms.Feeder;
 import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.mechanisms.Hood;
-import org.firstinspires.ftc.teamcode.mechanisms.Sort;
 
 public class Launch_v1 {
     private enum State {
@@ -20,62 +19,60 @@ public class Launch_v1 {
         SHOOTING,
         STANDBY
     }
-
+    private int aim;
     private State state = State.IDLE;
     private Hood hood = null;
     private Feeder feed = null;
     private Flywheel flywheel = null;
     private HardwareMap hardware_map;
-    private Sort sort = new Sort();
 
     public Launch_v1(HardwareMap input_hardware_map) {
         hardware_map = input_hardware_map;
     }
 
     public void init() {
-        hood = new Hood();
-        feed = new Feeder();
-        sort = new Sort();
-        flywheel = new Flywheel(hardware_map, REVERSE);
+        hood = new Hood(hardware_map, 0);
+        feed = new Feeder(hardware_map);
+        flywheel = new Flywheel(hardware_map, REVERSE, FORWARD);
     }
 
     public void run(boolean shotPressed) {
         if (state == State.IDLE) {
-            hood.home();
-            feed.down();
+            feed.down(true);
+            flywheel.turnMotorOn(false);
             flywheel.turnMotorOff(true);
             if (shotPressed) {
                 state = State.SPIN_UP;
             }
         }
         if (state == State.SPIN_UP) {
-            hood.angle();
-            feed.down();
+
+            hood.angle(aim);
+            feed.down(true);
+            flywheel.turnMotorOff(true);
             flywheel.turnMotorOn(true);
-            sort.slot_left(gamepad1.left_bumper);
-            sort.slot_right(gamepad1.right_bumper);
             if (flywheel.is_at_target()) {
                 state = State.ACTIVATE;
             }
         }
         if (state == State.ACTIVATE) {
-            feed.up();
+            feed.down(false);
+            feed.up(true);
             if (feed.is_homed()) {
                 state = State.SHOOTING;
             }
         }
         if (state == State.SHOOTING) {
-            feed.down();
+            feed.up(false);
+            feed.down(true);
             if (feed.is_homed()) {
                 state = State.STANDBY;
             }
         }
         if (state == State.STANDBY) {
-            hood.angle();
-            feed.down();
+            hood.angle(aim);
+            feed.down(true);
             flywheel.turnMotorOn(true);
-            sort.slot_left(gamepad1.left_bumper);
-            sort.slot_right(gamepad1.right_bumper);
             if (gamepad1.b) {
                 state = State.IDLE;
             }

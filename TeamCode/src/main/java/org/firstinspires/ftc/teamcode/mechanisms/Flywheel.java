@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 import static org.firstinspires.ftc.teamcode.utils.Config.*;
@@ -12,8 +13,8 @@ public class Flywheel {
     }
 
 
-    private int min_velocity;
-    private int target_velocity;
+    public int min_velocity;
+    public int target_velocity;
 
     public void turnMotorOn(boolean button) {
         if (button) {
@@ -26,32 +27,42 @@ public class Flywheel {
         }
     }
     public boolean is_at_target(){
-        return true;
+        return launcher.getVelocity() >= target_velocity;
     }
 
     private boolean launcherActive = false;
 
-    private DcMotorEx launcher = null;
-            public Flywheel(HardwareMap hardware_map, int launcher_direction){
-                launcher = hardware_map.get(DcMotorEx.class, LAUNCHER);
-                launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-                if (launcher_direction == FORWARD){
-                    launcher.setDirection(DcMotorEx.Direction.FORWARD);
-                } else {
-                    launcher.setDirection(DcMotorEx.Direction.REVERSE);
-                }
-                min_velocity = 1350;
-                target_velocity = 1400;
-                launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    public DcMotorEx launcher = null;
+    public DcMotorEx launcherTwo = null;
+    public Flywheel(HardwareMap hardware_map, int launcher_direction, int launcherTwo_direction){
+        launcher = hardware_map.get(DcMotorEx.class, shooterOne);
+        launcherTwo = hardware_map.get(DcMotorEx.class, shooterTwo);
+        launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        launcherTwo.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        if (launcher_direction == FORWARD){
+            launcher.setDirection(DcMotorEx.Direction.FORWARD);
+        } else {
+            launcher.setDirection(DcMotorEx.Direction.REVERSE);
+        } if (launcherTwo_direction == FORWARD){
+            launcherTwo.setDirection(DcMotorEx.Direction.FORWARD);
+        } else {
+            launcherTwo.setDirection(DcMotorSimple.Direction.REVERSE);
+        }
+        min_velocity = 5950;
+        target_velocity = 6000;
+        launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        launcherTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            }
-            public void run(){
-                if (launcherActive){
-                    launcher.setVelocity(target_velocity);
+    }
+    public void run(){
+        if (launcherActive){
+            launcher.setVelocity(target_velocity);
+            launcherTwo.setVelocity(target_velocity);
 
-                } else {
-                    launcher.setVelocity(0);
-                }
-            }
+        } else {
+            launcher.setVelocity(0);
+            launcherTwo.setVelocity(0);
+        }
+    }
 
 }

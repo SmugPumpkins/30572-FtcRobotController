@@ -18,7 +18,7 @@ public class FlywheelExample {
 
 
     public void init(HardwareMap hardwareMap){
-        launcher = hardwareMap.get(DcMotorEx.class, LAUNCHER);
+        launcher = hardwareMap.get(DcMotorEx.class, shooterOne);
         if (launcher_direction == FORWARD){
             launcher.setDirection(DcMotorEx.Direction.FORWARD);
         } else {
