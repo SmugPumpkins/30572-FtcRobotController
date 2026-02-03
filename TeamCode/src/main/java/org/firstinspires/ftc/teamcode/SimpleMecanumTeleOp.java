@@ -34,7 +34,7 @@ public class SimpleMecanumTeleOp extends OpMode {
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
         drivetrain.driveFieldRelative(0, 0, 0);
-        telemetry.addLine("V46");
+        telemetry.addLine("V47");
     }
 
     @Override
