@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 public class MecanumDriveTrain {
@@ -20,10 +21,11 @@ public class MecanumDriveTrain {
     private DcMotor front_right = null;
     private DcMotor back_left = null;
     private DcMotor back_right = null;
+    private Telemetry telemetry;
 
     IMU imu;
 
-    public MecanumDriveTrain (HardwareMap hardware_map) {
+    public MecanumDriveTrain (HardwareMap hardware_map, Telemetry telemetry) {
         front_left = hardware_map.get(DcMotor.class, FRONT_LEFT);
         front_right = hardware_map.get(DcMotor.class, FRONT_RIGHT);
         back_left = hardware_map.get(DcMotor.class, BACK_LEFT);
@@ -38,6 +40,7 @@ public class MecanumDriveTrain {
         RevHubOrientationOnRobot orientationOnRobot = new
                 RevHubOrientationOnRobot(logoDirection, usbDirection);
         imu.initialize(new IMU.Parameters(orientationOnRobot));
+        this.telemetry = telemetry;
     }
 
     public void init(int front_left_direction, int front_right_direction, int back_left_direction, int back_right_direction) {

@@ -7,6 +7,7 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.teamcode.mechanisms.Feeder;
 import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.mechanisms.Hood;
@@ -25,15 +26,17 @@ public class Launch_v1 {
     private Feeder feed = null;
     private Flywheel flywheel = null;
     private HardwareMap hardware_map;
+    private Telemetry telemetry;
 
-    public Launch_v1(HardwareMap input_hardware_map) {
+    public Launch_v1(HardwareMap input_hardware_map, Telemetry telemetry) {
         hardware_map = input_hardware_map;
+        this.telemetry = telemetry;
     }
 
     public void init() {
         hood = new Hood(hardware_map, 0);
-        feed = new Feeder(hardware_map);
-        flywheel = new Flywheel(hardware_map, REVERSE, FORWARD);
+        feed = new Feeder(hardware_map, telemetry);
+        flywheel = new Flywheel(hardware_map, REVERSE, FORWARD, telemetry);
     }
 
     public void run(boolean shotPressed) {

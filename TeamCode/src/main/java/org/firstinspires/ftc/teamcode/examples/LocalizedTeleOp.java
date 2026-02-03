@@ -2,10 +2,12 @@ package org.firstinspires.ftc.teamcode.examples;
 
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp
+@Disabled
 public class LocalizedTeleOp extends OpMode {
     private LocalizationManager localization = new LocalizationManager();
     private MecanumExample drivetrain = new MecanumExample();

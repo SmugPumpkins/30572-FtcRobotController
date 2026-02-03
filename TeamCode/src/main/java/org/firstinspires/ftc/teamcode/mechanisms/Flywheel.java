@@ -6,7 +6,11 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 import static org.firstinspires.ftc.teamcode.utils.Config.*;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Flywheel {
+
+    private Telemetry telemetry;
     public void setVelocity(int velocity) {
         min_velocity = velocity;
         target_velocity = velocity + 50;
@@ -34,7 +38,7 @@ public class Flywheel {
 
     public DcMotorEx launcher = null;
     public DcMotorEx launcherTwo = null;
-    public Flywheel(HardwareMap hardware_map, int launcher_direction, int launcherTwo_direction){
+    public Flywheel(HardwareMap hardware_map, int launcher_direction, int launcherTwo_direction, Telemetry telemetry){
         launcher = hardware_map.get(DcMotorEx.class, shooterOne);
         launcherTwo = hardware_map.get(DcMotorEx.class, shooterTwo);
         launcher.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -52,7 +56,7 @@ public class Flywheel {
         target_velocity = 1200;
         launcher.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         launcherTwo.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        this.telemetry = telemetry;
     }
     public void run(){
         if (launcherActive){
