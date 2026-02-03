@@ -51,7 +51,7 @@ public class Auto1Red extends OpMode {
     }
     @Override
     public void init() {
-        drive = new MecanumDriveTrain(hardwareMap);
+        drive = new MecanumDriveTrain(hardwareMap, telemetry);
         telemetry.addLine("V1");
         telemetry.addLine("Red alliance");
         telemetry.addLine("Strafe off line");

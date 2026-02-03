@@ -81,10 +81,10 @@ public class Auto2Blue extends OpMode {
     }
     @Override
     public void init() {
-        drive = new MecanumDriveTrain(hardwareMap);
-        sorter = new SpinSorter(hardwareMap, 0.49);
-        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD);
-        servoArm = new Feeder(hardwareMap);
+        drive = new MecanumDriveTrain(hardwareMap, telemetry);
+        sorter = new SpinSorter(hardwareMap, 0.49, telemetry);
+        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);
+        servoArm = new Feeder(hardwareMap, telemetry);
         telemetry.addLine("V1");
         telemetry.addLine("Blue alliance");
         telemetry.addLine("Back up, shoot, then strafe off line");

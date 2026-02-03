@@ -82,8 +82,8 @@ public class Auto3Red extends OpMode {
     }
     @Override
     public void init() {
-        drive = new MecanumDriveTrain(hardwareMap);
-        sorter = new SpinSorter(hardwareMap, 0.49);
+        drive = new MecanumDriveTrain(hardwareMap, telemetry);
+        sorter = new SpinSorter(hardwareMap, 0.49, telemetry);
         telemetry.addLine("V1");
         telemetry.addLine("Red alliance");
         telemetry.addLine("Move forward, rotate, move forward again, shoot, then strafe off line");
