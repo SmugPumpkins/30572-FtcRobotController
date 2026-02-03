@@ -11,8 +11,8 @@ public class launcherTest extends OpMode {
     Launch_v1 launcher= null;
     @Override
     public void init() {
-        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD);
-        launcher = new Launch_v1(hardwareMap);
+        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);
+        launcher = new Launch_v1(hardwareMap, telemetry);
     }
 
     @Override

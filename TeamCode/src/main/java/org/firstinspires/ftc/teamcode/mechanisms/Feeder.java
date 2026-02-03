@@ -4,11 +4,15 @@ import static org.firstinspires.ftc.teamcode.utils.Config.ServoArm;
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
+
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Feeder {
     private boolean servoArm_homed;
     public double servoArm_position;
     private final double[] positions = {0.3, 0};
     private int index = 0;
+    private Telemetry telemetry;
 
     public void up(boolean button){
         if (button) {
@@ -28,7 +32,8 @@ public class Feeder {
         return servoArm_homed;
     }
     private Servo servoArm = null;
-    public Feeder(HardwareMap hardware_map) {
+    public Feeder(HardwareMap hardware_map, Telemetry telemetry) {
+        this.telemetry = telemetry;
         servoArm = hardware_map.get(Servo.class, ServoArm);
     }
 }

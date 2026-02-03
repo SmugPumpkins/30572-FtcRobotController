@@ -7,11 +7,14 @@ import static org.firstinspires.ftc.teamcode.utils.Config.INTAKE;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
+
 public class Intake {
 
     private DcMotor intake = null;
-
-    public Intake (HardwareMap hardware_map) {
+    private Telemetry telemetry;
+    public Intake (HardwareMap hardware_map, Telemetry telemetry) {
+        this.telemetry = telemetry;
         intake = hardware_map.get(DcMotor.class, INTAKE);
     }
 
