@@ -80,8 +80,10 @@ public class Auto2Red extends OpMode {
     }
     @Override
     public void init() {
-        drive = new MecanumDriveTrain(hardwareMap);
-        sorter = new SpinSorter(hardwareMap, 0.49);
+        drive = new MecanumDriveTrain(hardwareMap, telemetry);
+        sorter = new SpinSorter(hardwareMap, 0.49, telemetry);
+        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);
+        servoArm = new Feeder(hardwareMap, telemetry);
         telemetry.addLine("V1");
         telemetry.addLine("Red alliance");
         telemetry.addLine("Back up, shoot, then strafe off line");
