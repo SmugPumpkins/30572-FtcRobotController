@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.SpinSorter;
 import org.firstinspires.ftc.teamcode.Launch_v1;
 import org.firstinspires.ftc.teamcode.mechanisms.Feeder;
 import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
-@TeleOp
+@TeleOp(name="Simple Mecanum TeleOp", group ="Competition")
 public class SimpleMecanumTeleOp extends OpMode {
     MecanumDriveTrain drivetrain = null;
     Intake intake = null;
@@ -24,13 +24,13 @@ public class SimpleMecanumTeleOp extends OpMode {
 
     @Override
     public void init() {
-        drivetrain = new MecanumDriveTrain(hardwareMap);
-        intake = new Intake(hardwareMap);
-        sorter = new SpinSorter(hardwareMap, 0.5);
+        drivetrain = new MecanumDriveTrain(hardwareMap, telemetry);
+        intake = new Intake(hardwareMap, telemetry);
+        sorter = new SpinSorter(hardwareMap, 0.5, telemetry);
         //hood = new Hood(hardwareMap, 0);
-        launch = new Launch_v1(hardwareMap);
-        servoArm = new Feeder(hardwareMap);
-        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD);
+        launch = new Launch_v1(hardwareMap ,telemetry);
+        servoArm = new Feeder(hardwareMap, telemetry);
+        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
         drivetrain.driveFieldRelative(0, 0, 0);

@@ -1,9 +1,11 @@
 package org.firstinspires.ftc.teamcode.examples;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp
+@Disabled
 public class ExampleTeleOp extends OpMode {
     private AprilTagSensorExample aprilTagSensor = new AprilTagSensorExample();
     private LaunchSystemExample launchSystem = new LaunchSystemExample();
