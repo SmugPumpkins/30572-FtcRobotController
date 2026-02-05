@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.mechanisms;
 
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
+import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.gamepad1;
+
 
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
@@ -49,7 +51,7 @@ public class Shooting {
         if (state == State.SPIN_UP) {
             flywheel.turnMotorOff(false);
             flywheel.turnMotorOn(true);
-            if (flywheel. >= flywheel.target_velocity) {
+            if (flywheel.is_at_target()) {
                 state = State.ACTIVATE;
             }
         }
