@@ -32,7 +32,7 @@ public class Shooting {
     }
     public void init() {
         hood = new HoodControl(hardware_map, 0.5);
-        sorter = new SpinSorter(hardware_map, 0.49, telemetry);
+        sorter = new SpinSorter(hardware_map, 0.14, telemetry);
         servoArm = new Feeder(hardware_map, telemetry);
         flywheel = new Flywheel(hardware_map, REVERSE, FORWARD, telemetry);
     }
@@ -49,7 +49,7 @@ public class Shooting {
         if (state == State.SPIN_UP) {
             flywheel.turnMotorOff(false);
             flywheel.turnMotorOn(true);
-            if (flywheel. >= flywheel.target_velocity) {
+            if (flywheel.is_at_target()) {
                 state = State.ACTIVATE;
             }
         }

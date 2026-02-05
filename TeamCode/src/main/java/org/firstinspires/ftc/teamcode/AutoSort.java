@@ -92,7 +92,7 @@ public class AutoSort {
         }
     }
     public AutoSort(){
-        spindexer = new SpinSorter(hardwareMap, 0.49, telemetry);
+        spindexer = new SpinSorter(hardwareMap, 0.14, telemetry);
         flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);
         servoArm = new Feeder(hardwareMap, telemetry);
         colourSensor = hardwareMap.get(ColorSensor.class, "colourSensor");

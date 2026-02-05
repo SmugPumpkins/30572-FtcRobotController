@@ -83,7 +83,7 @@ public class Auto3Blue extends OpMode {
     @Override
     public void init() {
         drive = new MecanumDriveTrain(hardwareMap, telemetry);
-        sorter = new SpinSorter(hardwareMap, 0.49, telemetry);
+        sorter = new SpinSorter(hardwareMap, 0.14, telemetry);
         flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);
         servoArm = new Feeder(hardwareMap, telemetry);
         telemetry.addLine("V1");

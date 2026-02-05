@@ -30,7 +30,7 @@ public class SimpleMecanumTeleOp extends OpMode {
     public void init() {
         drivetrain = new MecanumDriveTrain(hardwareMap, telemetry);
         intake = new Intake(hardwareMap, telemetry);
-        sorter = new SpinSorter(hardwareMap, 0.49, telemetry);
+        sorter = new SpinSorter(hardwareMap, 0.14, telemetry);
         hood = new HoodControl(hardwareMap, 0.5);
         servoArm = new Feeder(hardwareMap, telemetry);
         flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);

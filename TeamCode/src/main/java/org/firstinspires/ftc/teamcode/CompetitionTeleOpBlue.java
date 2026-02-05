@@ -93,9 +93,9 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
 
     // === SPINDEXER: two sets (shooting = kick plate, intake = indexer ramp) ===
     // Shooting: slots align with KICK PLATE (D-pad Up = Slot 0, calibrate in Servo Calibration)
-    public static double SPINDEXER_SHOOT_0 = 0.080;
-    public static double SPINDEXER_SHOOT_1 = 0.480;
-    public static double SPINDEXER_SHOOT_2 = 0.890;
+    public static double SPINDEXER_SHOOT_0 = 0.53;
+    public static double SPINDEXER_SHOOT_1 = 0.14;
+    public static double SPINDEXER_SHOOT_2 = 0.99;
     // Intake: slots align with INDEXER RAMP (calibrated) - cycle 0 -> 0.460 -> 0.865 so balls align
     public static double SPINDEXER_INTAKE_0 = 0.00;
     public static double SPINDEXER_INTAKE_1 = 0.460;
