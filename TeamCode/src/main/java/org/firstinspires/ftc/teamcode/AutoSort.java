@@ -58,6 +58,7 @@ public class AutoSort {
             do {
                 spindexer.SpinLeft(true);
             } while(!isGreenBallDetected());
+            spindexer.SpinLeft(true);
             launch();
             spindexer.SpinLeft(true);
             launch();
@@ -68,24 +69,29 @@ public class AutoSort {
             do {
                 spindexer.SpinLeft(true);
             } while(!isPurpleBallDetected());
+            spindexer.SpinLeft(true);
             launch();
             do {
                 spindexer.SpinLeft(true);
             } while(!isGreenBallDetected());
+            spindexer.SpinLeft(true);
             launch();
             do {
                 spindexer.SpinLeft(true);
             } while(!isPurpleBallDetected());
+            spindexer.SpinLeft(true);
             launch();
         }
         else if(motif == 23){
             do {
                 spindexer.SpinLeft(true);
             } while(!isPurpleBallDetected());
+            spindexer.SpinLeft(true);
             launch();
             do {
                 spindexer.SpinLeft(true);
             } while(!isPurpleBallDetected());
+            spindexer.SpinLeft(true);
             launch();
             spindexer.SpinLeft(true);
             launch();
