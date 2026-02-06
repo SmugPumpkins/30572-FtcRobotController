@@ -4,6 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
 
+import android.view.accessibility.AccessibilityNodeInfo;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.mechanisms.ArcadeDrivetrain;
 import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
@@ -12,7 +15,7 @@ import org.firstinspires.ftc.teamcode.mechanisms.Feeder;
 import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.mechanisms.HoodControl;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooting;
-
+import org.firstinspires.ftc.teamcode.mechanisms.LimeLight_Sensor;
 
 @TeleOp(name="Simple Mecanum TeleOp", group ="Competition")
 public class SimpleMecanumTeleOp extends OpMode {
@@ -23,28 +26,29 @@ public class SimpleMecanumTeleOp extends OpMode {
     Flywheel flywheel = null;
     HoodControl hood = null;
     Shooting shooting = null;
-
-
+    LimeLight_Sensor limelight = null;
 
     @Override
     public void init() {
         drivetrain = new MecanumDriveTrain(hardwareMap, telemetry);
         intake = new Intake(hardwareMap, telemetry);
-        sorter = new SpinSorter(hardwareMap, 0.14, telemetry);
+        sorter = new SpinSorter(hardwareMap, 0.105, telemetry);
         hood = new HoodControl(hardwareMap, 0.5);
         servoArm = new Feeder(hardwareMap, telemetry);
         flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);
         shooting = new Shooting(hardwareMap, telemetry);
+        limelight = new LimeLight_Sensor(hardwareMap, telemetry, 0.37, 0.98, 20.0, "sightings.json");
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
         drivetrain.driveFieldRelative(0, 0, 0);
-        telemetry.addLine("V49");
+        telemetry.addLine("V55");
     }
 
     @Override
     public void loop() {
-        double forward = gamepad1.left_stick_y;
-        double right = -gamepad1.left_stick_x;
+
+        double forward = -gamepad1.left_stick_y;
+        double right = gamepad1.left_stick_x;
         double rotate = -gamepad1.right_stick_x;
         drivetrain.driveFieldRelative(forward, right, rotate);
         if (gamepad1.a) {
@@ -128,6 +132,7 @@ public class SimpleMecanumTeleOp extends OpMode {
         telemetry.addData("Velocity of Flywheel Motor 1", flywheel.launcher.getVelocity());
         telemetry.addData("Velocity of Flywheel Motor 2", flywheel.launcherTwo.getVelocity());
         telemetry.addData("Hood Position", hood.hood_position);
+        telemetry.addData("Yaw (deg)", drivetrain.getYawDegrees());
         flywheel.run();
 
     }

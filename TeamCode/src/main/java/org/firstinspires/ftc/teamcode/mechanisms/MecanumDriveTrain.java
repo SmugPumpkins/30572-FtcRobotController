@@ -92,7 +92,7 @@ public class MecanumDriveTrain {
         double theta = Math.atan2(forward, right);
         double r = Math.hypot(right, forward);
 
-        theta = AngleUnit.normalizeRadians(theta + robotYaw);
+        theta = AngleUnit.normalizeRadians(theta - robotYaw);
 
         double newForward = r * Math.sin(theta);
         double newRight = r * Math.cos(theta);
@@ -102,5 +102,9 @@ public class MecanumDriveTrain {
 
     public void resetYaw() {
         imu.resetYaw();
+    }
+
+    public double getYawDegrees() {
+        return imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.DEGREES);
     }
 }

@@ -15,7 +15,7 @@ public class SpinSorter {
     public void init() {
         spindexer.setPosition(spindexer_position);
     }
-    private final double[] positions = {0.53, 0.14, 0.99, 0.14};
+    private final double[] positions = {0.105, 0.53, 0.995, 0.53};
     private int index = 0;
     public void SpinLeft(boolean button) {
         if (button) {
