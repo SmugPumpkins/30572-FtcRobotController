@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import static org.firstinspires.ftc.teamcode.utils.Constants.*;
@@ -16,6 +17,8 @@ import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.mechanisms.HoodControl;
 import org.firstinspires.ftc.teamcode.mechanisms.Shooting;
 import org.firstinspires.ftc.teamcode.mechanisms.LimeLight_Sensor;
+
+import java.util.List;
 
 @TeleOp(name="Simple Mecanum TeleOp", group ="Competition")
 public class SimpleMecanumTeleOp extends OpMode {
@@ -41,7 +44,9 @@ public class SimpleMecanumTeleOp extends OpMode {
         drivetrain.init(REVERSE, FORWARD, REVERSE, FORWARD);
         intake.init(FORWARD);
         drivetrain.driveFieldRelative(0, 0, 0);
-        telemetry.addLine("V56");
+        com.qualcomm.hardware.limelightvision.Limelight3A ll = hardwareMap.get(com.qualcomm.hardware.limelightvision.Limelight3A.class, "limelight3a");
+        limelight.initLimelight(ll);
+        telemetry.addLine("V60");
     }
 
     @Override
@@ -133,6 +138,36 @@ public class SimpleMecanumTeleOp extends OpMode {
         telemetry.addData("Velocity of Flywheel Motor 2", flywheel.launcherTwo.getVelocity());
         telemetry.addData("Hood Position", hood.hood_position);
         telemetry.addData("Yaw (deg)", drivetrain.getYawDegrees());
+        telemetry.addData("Target Distance", limelight.hasAnyGoalTarget());
+        telemetry.addData("limelightEnabled", limelight != null /* or limelightEnabled if you expose it */);
+        if (limelight != null) {
+            com.qualcomm.hardware.limelightvision.LLResult r = limelight.getLatestResult();
+            telemetry.addData("resultValid", r != null && r.isValid());
+            if (r != null) {
+                telemetry.addData("Ta", r.getTa());
+                telemetry.addData("Fiducials count", r.getFiducialResults() == null ? 0 : r.getFiducialResults().size());
+            }
+        }
+        telemetry.addData("limelightWrapperNull", limelight == null);
+        if (limelight != null) {
+            com.qualcomm.hardware.limelightvision.LLResult r = limelight.getLatestResult();
+            telemetry.addData("resultNull", r == null);
+            telemetry.addData("resultValid", r != null && r.isValid());
+            if (r != null) {
+                telemetry.addData("Ta", r.getTa());
+                List<LLResultTypes.FiducialResult> fids = r.getFiducialResults();
+                telemetry.addData("fiducialListNull", fids == null);
+                telemetry.addData("fiducialCount", fids == null ? 0 : fids.size());
+                if (fids != null) {
+                    int i = 0;
+                    for (com.qualcomm.hardware.limelightvision.LLResultTypes.FiducialResult f : fids) {
+                        telemetry.addData("fid#" + i, "id=" + f.getFiducialId());
+                        i++;
+                    }
+                }
+            }
+        }
+        telemetry.update();
         flywheel.run();
 
     }

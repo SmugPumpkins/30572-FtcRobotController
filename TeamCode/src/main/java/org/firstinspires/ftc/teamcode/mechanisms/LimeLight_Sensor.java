@@ -22,6 +22,12 @@ import java.util.List;
 public class LimeLight_Sensor {
     public LimeLight_Sensor(HardwareMap hardwareMap, Telemetry telemetry, double ch, double th, double ma, String s) {
     }
+    public com.qualcomm.hardware.limelightvision.LLResult getLatestResult() {
+        if (this.limelight != null) {
+            return this.limelight.getLatestResult();
+        }
+        return null;
+    }
 
     public void initLimelight(Limelight3A limelight) {
         this.limelight = limelight;
