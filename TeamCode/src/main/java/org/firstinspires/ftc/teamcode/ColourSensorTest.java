@@ -18,6 +18,6 @@ public class ColourSensorTest extends OpMode {
         telemetry.update();
     }
     public ColourSensorTest() {
-        colourSensor = hardwareMap.get(ColorSensor.class, "colourSensor");
+        colourSensor = hardwareMap.get(ColorSensor.class, "ColourSensor");
     }
 }
