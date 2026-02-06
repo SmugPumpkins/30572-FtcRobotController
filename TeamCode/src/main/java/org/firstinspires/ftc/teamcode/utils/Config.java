@@ -16,5 +16,5 @@ public final class Config {
     public static final String SPINDEXER = "spindexer";
     public static final String HOOD = "hood";
     public static final String ServoArm = "servoArm";
-    public static final String ColourSensor = "colourSensor";
+    public static final String ColourSensor = "ColourSensor";
 }
