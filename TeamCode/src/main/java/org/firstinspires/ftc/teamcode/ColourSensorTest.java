@@ -5,19 +5,16 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+
+import org.firstinspires.ftc.teamcode.mechanisms.ColourSensor;
+
 @TeleOp
 public class ColourSensorTest extends OpMode {
-    private ColorSensor colourSensor = null;
+    ColourSensor colourSensor = new ColourSensor();
     public void init(){
+        colourSensor.init(hardwareMap);
     }
     public void loop(){
-        telemetry.addLine("Colour Sensor Test");
-        telemetry.addData("Red: ", colourSensor.red());
-        telemetry.addData("Green: ", colourSensor.green());
-        telemetry.addData("Blue: ", colourSensor.blue());
-        telemetry.update();
-    }
-    public ColourSensorTest() {
-        colourSensor = hardwareMap.get(ColorSensor.class, "ColourSensor");
+        colourSensor.getColour(telemetry);
     }
 }
