@@ -46,7 +46,7 @@ public class SimpleMecanumTeleOp extends OpMode {
         drivetrain.driveFieldRelative(0, 0, 0);
         com.qualcomm.hardware.limelightvision.Limelight3A ll = hardwareMap.get(com.qualcomm.hardware.limelightvision.Limelight3A.class, "limelight3a");
         limelight.initLimelight(ll);
-        telemetry.addLine("V60");
+        telemetry.addLine("V61");
     }
 
     @Override
@@ -125,10 +125,66 @@ public class SimpleMecanumTeleOp extends OpMode {
             hood.hood_down(false);
         }
         if (gamepad1.rightBumperWasPressed()) {
-            shooting.run(true);
+            flywheel.turnMotorOn(true);
+            flywheel.turnMotorOff(false);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            servoArm.up(true);
+            servoArm.down(false);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            servoArm.up(false);
+            servoArm.down(true);
+            sorter.SpinRight(true);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            sorter.SpinRight(false);
+            servoArm.up(true);
+            servoArm.down(false);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            servoArm.up(false);
+            servoArm.down(true);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            sorter.SpinRight(true);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            sorter.SpinRight(false);
+            servoArm.up(true);
+            servoArm.down(false);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            servoArm.up(false);
+            servoArm.down(true);
+            flywheel.turnMotorOn(false);
+            flywheel.turnMotorOff(true);
+
         }
         if (gamepad1.rightBumperWasReleased()) {
-            shooting.run(false);
+            flywheel.turnMotorOn(false);
+            flywheel.turnMotorOff(true);
         }
 
         telemetry.addData("Position", sorter.spindexer_position);
