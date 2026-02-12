@@ -30,6 +30,8 @@ public class SimpleMecanumTeleOp extends OpMode {
     HoodControl hood = null;
     Shooting shooting = null;
     LimeLight_Sensor limelight = null;
+    private boolean shootingSequenceActive = false;
+    private long shootingSequenceStartTime = 0;
 
     @Override
     public void init() {
@@ -46,7 +48,7 @@ public class SimpleMecanumTeleOp extends OpMode {
         drivetrain.driveFieldRelative(0, 0, 0);
         com.qualcomm.hardware.limelightvision.Limelight3A ll = hardwareMap.get(com.qualcomm.hardware.limelightvision.Limelight3A.class, "limelight3a");
         limelight.initLimelight(ll);
-        telemetry.addLine("V61");
+        telemetry.addLine("V67");
     }
 
     @Override
@@ -125,66 +127,11 @@ public class SimpleMecanumTeleOp extends OpMode {
             hood.hood_down(false);
         }
         if (gamepad1.rightBumperWasPressed()) {
-            flywheel.turnMotorOn(true);
-            flywheel.turnMotorOff(false);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            servoArm.up(true);
-            servoArm.down(false);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            servoArm.up(false);
-            servoArm.down(true);
-            sorter.SpinRight(true);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            sorter.SpinRight(false);
-            servoArm.up(true);
-            servoArm.down(false);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            servoArm.up(false);
-            servoArm.down(true);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            sorter.SpinRight(true);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            sorter.SpinRight(false);
-            servoArm.up(true);
-            servoArm.down(false);
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            servoArm.up(false);
-            servoArm.down(true);
-            flywheel.turnMotorOn(false);
-            flywheel.turnMotorOff(true);
-
+            shootingSequenceActive = true;
+            shootingSequenceStartTime = System.currentTimeMillis();
         }
-        if (gamepad1.rightBumperWasReleased()) {
-            flywheel.turnMotorOn(false);
-            flywheel.turnMotorOff(true);
+        if (shootingSequenceActive) {
+            updateShootingSequence();
         }
 
         telemetry.addData("Position", sorter.spindexer_position);
@@ -223,8 +170,85 @@ public class SimpleMecanumTeleOp extends OpMode {
                 }
             }
         }
+        telemetry.addData("Shooting Sequence Active", shootingSequenceActive);
         telemetry.update();
         flywheel.run();
 
+    }
+    private void updateShootingSequence() {
+        long elapsedTime = System.currentTimeMillis() - shootingSequenceStartTime;
+
+        // Timeline for the shooting sequence:
+        // 0-1000ms: Spin up flywheel
+        // 1000-1500ms: Servo arm up
+        // 1500-2000ms: Servo arm down
+        // 2000-2500ms: First sorter spin right
+        // 2500-3000ms: Sorter stops, servo arm up
+        // 3000-3500ms: Servo arm down
+        // 3500-4000ms: Second sorter spin right
+        // 4000-4500ms: Sorter stops, servo arm up
+        // 4500-5000ms: Servo arm down
+        // 5000+: Turn off flywheel, sequence complete
+
+        if (elapsedTime < 1000) {
+            // Stage 1: Flywheel spinning up
+            flywheel.turnMotorOn(true);
+            flywheel.turnMotorOff(false);
+        } else if (elapsedTime < 1500) {
+            // Stage 2: Servo arm up
+            servoArm.down(false);
+            servoArm.up(true);
+        } else if (elapsedTime < 2500) {
+            // Stage 3: Servo arm down
+            servoArm.up(false);
+            servoArm.down(true);
+        } else if (elapsedTime < 3500) {
+            // Stage 4: First sorter spin right
+            sorter.SpinRight(true);
+        } else if (elapsedTime < 4500) {
+            // Stage 5: Stop sorter
+            sorter.SpinRight(false);
+        } else if (elapsedTime < 5500) {
+            // Stage 6: Servo arm up
+            servoArm.down(false);
+            servoArm.up(true);
+        } else if (elapsedTime < 6500) {
+            // Stage 7: Servo arm down
+            servoArm.up(false);
+            servoArm.down(true);
+        } else if (elapsedTime < 7500) {
+            // Stage 8: Second sorter spin right
+            sorter.SpinRight(true);
+        } else if (elapsedTime < 8500) {
+            // Stage 9: Stop sorter
+            sorter.SpinRight(false);
+        } else if (elapsedTime < 9500) {
+            // Stage 10: Servo arm up
+            servoArm.down(false);
+            servoArm.up(true);
+        } else if (elapsedTime < 10500) {
+            // Stage 11: Servo arm down
+            servoArm.up(false);
+            servoArm.down(true);
+        } else if (elapsedTime < 11500) {
+            // Stage 12: Third sorter spin right
+            sorter.SpinRight(true);
+        } else if (elapsedTime < 12500) {
+            // Stage 13: Stop sorter, servo arm up
+            sorter.SpinRight(false);
+        } else if (elapsedTime < 13500) {
+            // Stage 14: Servo arm down
+            servoArm.down(false);
+            servoArm.up(true);
+        } else if (elapsedTime < 14500) {
+            // Stage 15: Servo arm down
+            servoArm.up(false);
+            servoArm.down(true);
+        } else {
+            // Sequence complete: Turn off flywheel and sorter
+            flywheel.turnMotorOn(false);
+            flywheel.turnMotorOff(true);;
+            shootingSequenceActive = false;
+        }
     }
 }
