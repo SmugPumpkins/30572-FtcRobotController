@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.gobilda.GoBildaPinpointDriver;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
 import com.qualcomm.robotcore.hardware.PwmControl;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -93,13 +96,13 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
 
     // === SPINDEXER: two sets (shooting = kick plate, intake = indexer ramp) ===
     // Shooting: slots align with KICK PLATE (D-pad Up = Slot 0, calibrate in Servo Calibration)
-    public static double SPINDEXER_SHOOT_0 = 0.53;
-    public static double SPINDEXER_SHOOT_1 = 0.14;
-    public static double SPINDEXER_SHOOT_2 = 0.99;
+    public static double SPINDEXER_SHOOT_0 = 0.130;
+    public static double SPINDEXER_SHOOT_1 = 0.530;
+    public static double SPINDEXER_SHOOT_2 = 0.930;
     // Intake: slots align with INDEXER RAMP (calibrated) - cycle 0 -> 0.460 -> 0.865 so balls align
-    public static double SPINDEXER_INTAKE_0 = 0.00;
-    public static double SPINDEXER_INTAKE_1 = 0.460;
-    public static double SPINDEXER_INTAKE_2 = 0.865;
+    public static double SPINDEXER_INTAKE_0 = 0.110;
+    public static double SPINDEXER_INTAKE_1 = 0.510;
+    public static double SPINDEXER_INTAKE_2 = 0.910;
     public static int SPINDEXER_INDEX_MS = 500;           // time at each slot (shoot) - slower so balls don't fly off
     public static int SPINDEXER_INTAKE_CYCLE_MS = 450;    // ms per step (0->1->2->2->1->0) - slower so balls don't fly off
     public static double INTAKE_COAST_SEC = 3.0;         // after release trigger, intake runs this long while spindexer cycles
@@ -122,6 +125,15 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     public static double AUTO_DRIVE_FORWARD_GAIN = 0.015; // auto-drive forward based on distance
     /** Slight press LT = drive with intake as front (180°); slight press RT/RB = drive with shooter as front. */
     public static double INTAKE_ORIENTATION_TRIGGER_THRESHOLD = 0.2;
+
+    // === DEFENSIVE DRIVE (Pinpoint position hold during shooting - resist being pushed) ===
+    public static boolean DEFENSIVE_LOCK_ENABLED = true;
+    public static double DEFENSIVE_LOCK_KP_X = 0.03;      // position gain (inches error -> forward/strafe)
+    public static double DEFENSIVE_LOCK_KP_Y = 0.03;
+    public static double DEFENSIVE_LOCK_KP_HEADING = 0.02;  // heading gain (degrees error -> rotate)
+    public static double DEFENSIVE_LOCK_DEADBAND_IN = 0.5;   // ignore small position errors
+    public static double DEFENSIVE_LOCK_DEADBAND_DEG = 2.0;  // ignore small heading errors
+    public static double DEFENSIVE_LOCK_MAX_CORRECTION = 0.4;  // cap corrective power per axis
 
     // === MANUAL SHOOT (override when no AprilTag) - FASTEST THROUGHPUT ===
     public static double MANUAL_SHOOT_POWER = 0.8;  // 80% power when manual override
@@ -152,6 +164,7 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     // === DRIVE ===
     private DcMotor leftFront, rightFront, leftBack, rightBack;
     private DcMotor intake;
+    private IMU imu;
 
     // === SHOOTER (CW + CCW on same axle) ===
     private DcMotorEx shooterOne, shootertwo;
@@ -203,6 +216,10 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     private ElapsedTime stateTimer = new ElapsedTime();
     private boolean prevShootBumper = false;
 
+    // Defensive drive (position hold during shooting)
+    private boolean defensiveLockActive = false;
+    private double lockTargetX = 0, lockTargetY = 0, lockTargetHeading = 0;
+
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initializing...");
@@ -211,6 +228,7 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         initHardware();
         stopAll();
         telemetry.addData("Status", "Ready! Right Bumper = One-Button Shoot");
+        telemetry.addData("Code Version", 4);
         telemetry.update();
         waitForStart();
 
@@ -461,13 +479,23 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         rightBack = hardwareMap.get(DcMotor.class, "rightBack");
 
         leftFront.setDirection(DcMotor.Direction.REVERSE);
-        rightFront.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
         rightBack.setDirection(DcMotor.Direction.FORWARD);
-        leftBack.setDirection(DcMotor.Direction.FORWARD);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        // IMU for field-relative driving (from MecanumDriveTrain)
+        imu = hardwareMap.get(IMU.class, "imu");
+        RevHubOrientationOnRobot.LogoFacingDirection logoDirection =
+                RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
+        RevHubOrientationOnRobot.UsbFacingDirection usbDirection =
+                RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
+        RevHubOrientationOnRobot orientationOnRobot =
+                new RevHubOrientationOnRobot(logoDirection, usbDirection);
+        imu.initialize(new IMU.Parameters(orientationOnRobot));
 
         intake = hardwareMap.get(DcMotor.class, "intake");
         intake.setDirection(DcMotor.Direction.FORWARD);
@@ -537,21 +565,25 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     }
 
     private void updateDrive() {
-        // Drive orientation: slight LT = intake as front (180°), slight RT/RB = shooter as front
-        if (gamepad1.left_trigger > INTAKE_ORIENTATION_TRIGGER_THRESHOLD || gamepad2.left_trigger > INTAKE_ORIENTATION_TRIGGER_THRESHOLD)
-            driveOrientationIntakeFront = true;
-        if (gamepad1.right_trigger > INTAKE_ORIENTATION_TRIGGER_THRESHOLD || gamepad2.right_trigger > INTAKE_ORIENTATION_TRIGGER_THRESHOLD
-                || gamepad1.right_bumper || gamepad2.right_bumper)
-            driveOrientationIntakeFront = false;
-
-        // Shooting side = front (or intake if driveOrientationIntakeFront). Left stick: X=forward/back, Y=strafe
-        double forward = -gamepad1.left_stick_x;
-        double strafe = gamepad1.left_stick_y;
-        double rotate = -gamepad1.right_stick_x;
-        if (driveOrientationIntakeFront) {
-            forward = -forward;
-            strafe = -strafe;
+        // X button = reset IMU yaw (field-relative recalibration)
+        if (gamepad1.x || gamepad2.x) {
+            imu.resetYaw();
         }
+
+        // Read gamepad inputs (standard FTC mapping - matches MecanumDriveTrain)
+        double forward = -gamepad1.left_stick_y;   // left stick Y = forward/back
+        double right = gamepad1.left_stick_x;     // left stick X = strafe right/left
+        double rotate = -gamepad1.right_stick_x;  // right stick X = rotation (negated)
+
+        // Field-relative driving using IMU (from MecanumDriveTrain.driveFieldRelative)
+        double robotYaw = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+        double theta = Math.atan2(forward, right);
+        double r = Math.hypot(right, forward);
+        theta = AngleUnit.normalizeRadians(theta - robotYaw);
+        double newForward = r * Math.sin(theta);
+        double newRight = r * Math.cos(theta);
+        forward = newForward;
+        double strafe = newRight;
 
         // Y button: whole robot auto-aligns to BLUE goal (Tag 20) - rotate + strafe until tx ~0
         if ((gamepad1.y || gamepad2.y) && hasVisionTarget()) {
@@ -579,25 +611,69 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                 rotate += corr * ALIGNMENT_ROTATE_GAIN;
             }
         }
+
+        // Defensive drive: Pinpoint position hold during shooting - resist being pushed
+        boolean shouldLock = DEFENSIVE_LOCK_ENABLED && pinpoint != null && pinpointEnabled
+                && shootState != ShootState.IDLE && shootState != ShootState.DONE;
+        if (shouldLock) {
+            if (!defensiveLockActive) {
+                lockTargetX = pinpoint.getPosX(DistanceUnit.INCH);
+                lockTargetY = pinpoint.getPosY(DistanceUnit.INCH);
+                lockTargetHeading = pinpoint.getHeading(AngleUnit.DEGREES);
+                defensiveLockActive = true;
+            }
+            double currX = pinpoint.getPosX(DistanceUnit.INCH);
+            double currY = pinpoint.getPosY(DistanceUnit.INCH);
+            double currH = pinpoint.getHeading(AngleUnit.DEGREES);
+            double errX = lockTargetX - currX;
+            double errY = lockTargetY - currY;
+            double errH = wrapDeg(lockTargetHeading - currH);
+            if (Math.abs(errX) < DEFENSIVE_LOCK_DEADBAND_IN) errX = 0;
+            if (Math.abs(errY) < DEFENSIVE_LOCK_DEADBAND_IN) errY = 0;
+            if (Math.abs(errH) < DEFENSIVE_LOCK_DEADBAND_DEG) errH = 0;
+            double defTheta = Math.toRadians(currH);
+            double forwardErr = errX * Math.cos(defTheta) + errY * Math.sin(defTheta);
+            double strafeErr = -errX * Math.sin(defTheta) + errY * Math.cos(defTheta);
+            double correctiveForward = Math.max(-DEFENSIVE_LOCK_MAX_CORRECTION, Math.min(DEFENSIVE_LOCK_MAX_CORRECTION, DEFENSIVE_LOCK_KP_X * forwardErr));
+            double correctiveStrafe = Math.max(-DEFENSIVE_LOCK_MAX_CORRECTION, Math.min(DEFENSIVE_LOCK_MAX_CORRECTION, DEFENSIVE_LOCK_KP_Y * strafeErr));
+            double correctiveRotate = Math.max(-DEFENSIVE_LOCK_MAX_CORRECTION, Math.min(DEFENSIVE_LOCK_MAX_CORRECTION, DEFENSIVE_LOCK_KP_HEADING * errH));
+            forward += correctiveForward;
+            strafe += correctiveStrafe;
+            rotate += correctiveRotate;
+        } else {
+            defensiveLockActive = false;
+        }
+
+        // Dead zone
         if (Math.abs(forward) < DEAD_ZONE) forward = 0;
         if (Math.abs(strafe) < DEAD_ZONE) strafe = 0;
         if (Math.abs(rotate) < DEAD_ZONE) rotate = 0;
+
         // Input curve: small stick = fine control, full stick = full power (driver confidence)
         if (forward != 0) forward = Math.signum(forward) * Math.pow(Math.abs(forward), DRIVE_CURVE_EXPONENT);
         if (strafe != 0) strafe = Math.signum(strafe) * Math.pow(Math.abs(strafe), DRIVE_CURVE_EXPONENT);
         if (rotate != 0) rotate = Math.signum(rotate) * Math.pow(Math.abs(rotate), DRIVE_CURVE_EXPONENT);
         strafe *= STRAFE_MULTIPLIER;
         rotate *= ROTATE_MULTIPLIER;
-        double lf = forward + strafe + rotate, rf = forward - strafe - rotate;
-        double lb = forward - strafe + rotate, rb = forward + strafe - rotate;
-        double max = Math.max(Math.max(Math.abs(lf), Math.abs(rf)), Math.max(Math.abs(lb), Math.abs(rb)));
-        if (max > 1.0) { lf /= max; rf /= max; lb /= max; rb /= max; }
+
+        // Mecanum formula (from MecanumDriveTrain.drive)
+        double frontLeftPower = forward + rotate + strafe;
+        double frontRightPower = forward - rotate - strafe;
+        double backRightPower = forward - rotate + strafe;
+        double backLeftPower = forward + rotate - strafe;
+
+        // Normalize (from MecanumDriveTrain.drive)
+        double maxPower = 1.0;
+        maxPower = Math.max(maxPower, Math.abs(frontLeftPower));
+        maxPower = Math.max(maxPower, Math.abs(frontRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backRightPower));
+        maxPower = Math.max(maxPower, Math.abs(backLeftPower));
+
         double speedCap = (gamepad1.dpad_down || gamepad2.dpad_down) ? PRECISION_SPEED : MAX_SPEED;
-        lf *= speedCap; rf *= speedCap; lb *= speedCap; rb *= speedCap;
-        leftFront.setPower(lf);
-        rightFront.setPower(rf);
-        leftBack.setPower(lb);
-        rightBack.setPower(rb);
+        leftFront.setPower(speedCap * (frontLeftPower / maxPower));
+        rightFront.setPower(speedCap * (frontRightPower / maxPower));
+        leftBack.setPower(speedCap * (backLeftPower / maxPower));
+        rightBack.setPower(speedCap * (backRightPower / maxPower));
     }
 
     private void updateIntake() {
@@ -832,6 +908,13 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         double tx = getVisionTxDegrees();
         double txErr = (Math.abs(tx) < 999) ? (tx - ALIGNMENT_TX_OFFSET_DEG) : 999;
         return Math.abs(txErr) <= ALIGNMENT_TOLERANCE_DEG;
+    }
+
+    /** Wrap angle in degrees to -180..180 for heading error. */
+    private double wrapDeg(double d) {
+        while (d > 180) d -= 360;
+        while (d < -180) d += 360;
+        return d;
     }
 
     private void updateHood() {

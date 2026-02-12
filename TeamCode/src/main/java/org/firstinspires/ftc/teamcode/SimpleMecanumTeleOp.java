@@ -48,7 +48,7 @@ public class SimpleMecanumTeleOp extends OpMode {
         drivetrain.driveFieldRelative(0, 0, 0);
         com.qualcomm.hardware.limelightvision.Limelight3A ll = hardwareMap.get(com.qualcomm.hardware.limelightvision.Limelight3A.class, "limelight3a");
         limelight.initLimelight(ll);
-        telemetry.addLine("V67");
+        telemetry.addLine("V68");
     }
 
     @Override
