@@ -96,9 +96,9 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
 
     // === SPINDEXER: two sets (shooting = kick plate, intake = indexer ramp) ===
     // Shooting: slots align with KICK PLATE (D-pad Up = Slot 0, calibrate in Servo Calibration)
-    public static double SPINDEXER_SHOOT_0 = 0.130;
-    public static double SPINDEXER_SHOOT_1 = 0.530;
-    public static double SPINDEXER_SHOOT_2 = 0.930;
+    public static double SPINDEXER_SHOOT_0 = 0.150;
+    public static double SPINDEXER_SHOOT_1 = 0.550;
+    public static double SPINDEXER_SHOOT_2 = 0.1000;
     // Intake: slots align with INDEXER RAMP (calibrated) - cycle 0 -> 0.460 -> 0.865 so balls align
     public static double SPINDEXER_INTAKE_0 = 0.110;
     public static double SPINDEXER_INTAKE_1 = 0.510;
@@ -228,7 +228,7 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         initHardware();
         stopAll();
         telemetry.addData("Status", "Ready! Right Bumper = One-Button Shoot");
-        telemetry.addData("Code Version", 4);
+        telemetry.addData("Code Version", 8);
         telemetry.update();
         waitForStart();
 
