@@ -228,7 +228,7 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         initHardware();
         stopAll();
         telemetry.addData("Status", "Ready! Right Bumper = One-Button Shoot");
-        telemetry.addData("Code Version", 8);
+        telemetry.addData("Code Version", 11);
         telemetry.update();
         waitForStart();
 
@@ -1097,3 +1097,4 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         if (servoArm != null) servoArm.setPosition(KICKER_DOWN_POS);
     }
 }
+
