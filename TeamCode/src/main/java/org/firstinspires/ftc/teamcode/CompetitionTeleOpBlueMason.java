@@ -878,3 +878,4 @@ public class CompetitionTeleOpBlueMason extends LinearOpMode {
             servoArm.setPosition(KICKER_DOWN_POS);
     }
 }
+
