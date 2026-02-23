@@ -88,22 +88,36 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     public static double FAR_DISTANCE_THRESHOLD_IN = 120.0;   // inches
     public static double VELOCITY_FAR_SIDE_MAX = 6000.0;    // RPM for far shots
 
-    // === HOOD (2 servos, distance -> position) ===
-    public static double HOOD_POS_NEAR = 0;
-    public static double HOOD_POS_FAR = 1.0;
+    // === HOOD (5-turn torque motors, inverted: lower value = higher position) ===
+    public static double HOOD_POS_TOP = 0.180;      // rack top (high hood, far shots)
+    public static double HOOD_POS_BOTTOM = 0.500;   // rack bottom (low hood, close shots)
     public static double HOOD_DIST_NEAR = 24;
     public static double HOOD_DIST_FAR = 72;
 
-    // === SPINDEXER: two sets (shooting = kick plate, intake = indexer ramp) ===
-    // Shooting: slots align with KICK PLATE (D-pad Up = Slot 0, calibrate in Servo Calibration)
-    public static double SPINDEXER_SHOOT_0 = 0.150;
-    public static double SPINDEXER_SHOOT_1 = 0.550;
-    public static double SPINDEXER_SHOOT_2 = 0.1000;
-    // Intake: slots align with INDEXER RAMP (calibrated) - cycle 0 -> 0.460 -> 0.865 so balls align
-    public static double SPINDEXER_INTAKE_0 = 0.110;
-    public static double SPINDEXER_INTAKE_1 = 0.510;
-    public static double SPINDEXER_INTAKE_2 = 0.910;
-    public static int SPINDEXER_INDEX_MS = 500;           // time at each slot (shoot) - slower so balls don't fly off
+    // === SPINDEXER: goBILDA servo (2.25 turns = 810deg usable range) ===
+    // Physical order: 1-0-2 (slot 1 is lowest position)
+    // Rotation 1 (rev 0): Shoot_1=0.010, Shoot_0=0.073, Shoot_2=0.137
+    // Rotation 2 (rev 1): Shoot_1=0.200, Shoot_0=0.263, Shoot_2=0.329
+    // Rotation 3 (rev 2): Shoot_1=0.396 (max before auto-reset)
+    public static double SPINDEXER_SHOOT_0 = 0.073;   // Rotation 1, slot 0
+    public static double SPINDEXER_SHOOT_1 = 0.010;   // Rotation 1, slot 1 (lowest)
+    public static double SPINDEXER_SHOOT_2 = 0.137;   // Rotation 1, slot 2 (highest)
+    public static double SPINDEXER_INTAKE_0 = 0.066;  // shoot_0 - 0.007 (estimated)
+    public static double SPINDEXER_INTAKE_1 = 0.003;  // shoot_1 - 0.007 (estimated)
+    public static double SPINDEXER_INTAKE_2 = 0.130;  // shoot_2 - 0.007 (estimated)
+    public static double SPINDEXER_REV_OFFSET = 0.190; // ~0.190 per 360deg revolution (measured)
+    public static int    SPINDEXER_MAX_FWD_REV = 2;   // max forward (rev 2: slot 1 at 0.396, near reset)
+    public static int    SPINDEXER_MAX_BWD_REV = 0;   // cannot go backward (rev 0 is minimum)
+    /**
+     * Sensor rotation mapping sign. The 3 color sensors are FIXED on the robot frame;
+     * as the turntable rotates, different logical slots pass under different sensors.
+     * +1: sensor[s] sees slot (s + activeSlot) % 3   (try this first)
+     * -1: sensor[s] sees slot (s - activeSlot + 3) % 3  (if +1 is wrong, flip to -1)
+     * TEST: put a ball in ONLY slot 0. Command spindexer to SHOOT_1. Check telemetry.
+     *       If Slot 0 shows BALL: sign is correct. If wrong slot shows BALL: flip sign.
+     */
+    public static int SENSOR_ROTATION_SIGN = 1;
+    public static int SPINDEXER_INDEX_MS = 250;           // time at each slot (shoot) - faster cycle
     public static int SPINDEXER_INTAKE_CYCLE_MS = 450;    // ms per step (0->1->2->2->1->0) - slower so balls don't fly off
     public static double INTAKE_COAST_SEC = 3.0;         // after release trigger, intake runs this long while spindexer cycles
 
@@ -111,7 +125,7 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     public static double KICKER_UP_POS = 0.060;
     public static double KICKER_DOWN_POS = 0.330;
     public static int KICKER_UP_MS = 220;   // long enough for plate to move so ball reliably goes out
-    public static int KICKER_DOWN_MS = 80;   // fast return, then spin for next ball
+    public static int KICKER_DOWN_MS = 50;   // fast return, then spin for next ball
 
     // === ALIGNMENT ===
     public static double ALIGNMENT_TOLERANCE_DEG = 2.0;
@@ -138,9 +152,9 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     // === MANUAL SHOOT (override when no AprilTag) - FASTEST THROUGHPUT ===
     public static double MANUAL_SHOOT_POWER = 0.8;  // 80% power when manual override
     public static double MANUAL_SHOOT_SPINUP_SEC = 1.0;  // 1 sec spinup for first ball only
-    public static int MANUAL_INDEX_MS = 500;         // time at each slot - slower so balls don't fly off (~70%)
+    public static int MANUAL_INDEX_MS = 250;         // time at each slot - faster cycle
     public static int MANUAL_KICKER_UP_MS = 200;     // long enough for plate to move so ball reliably goes out
-    public static int MANUAL_KICKER_DOWN_MS = 70;    // fast return, then spin for next ball
+    public static int MANUAL_KICKER_DOWN_MS = 50;    // fast return, then spin for next ball
 
     // === LED (your unit: A=off 0.0, B=red 0.35, X=green 0.500, Y=white 0.722; purple 0.666) ===
     // goBILDA: below 1100µs light is OFF. Use 0.35 so B always turns light ON (red/orange).
@@ -160,6 +174,17 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     public static int[] RED_TAG_IDS = { 24 };    // Red Alliance GOAL - per manual (for telemetry only)
     /** Limelight = tag plane; goal opening BEHIND tag (FTC). Corrected = raw × this. */
     public static double DISTANCE_CORRECTION = 0.95;
+    /**
+     * Ty-based distance estimation: distance = heightDiff / tan(cameraTilt + ty).
+     * MUCH more accurate than ta-based. CALIBRATE camera height and tilt for your robot!
+     * TAG_HEIGHT = height of AprilTag center from floor (FTC Into The Deep goal = 37").
+     * CAMERA_HEIGHT = your Limelight lens height from floor.
+     * CAMERA_TILT = camera's upward tilt angle from horizontal (degrees).
+     * If ty reads ~0 when looking straight at a tag at the same height → tilt ≈ 0.
+     */
+    public static double VISION_TAG_HEIGHT_IN = 37.0;      // AprilTag center height (inches)
+    public static double VISION_CAMERA_HEIGHT_IN = 12.0;   // Camera lens height (inches) - CALIBRATE!
+    public static double VISION_CAMERA_TILT_DEG = 20.0;    // Camera upward tilt (degrees) - CALIBRATE!
 
     // === DRIVE ===
     private DcMotor leftFront, rightFront, leftBack, rightBack;
@@ -176,7 +201,9 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     private Servo spindexer, servoArm;
 
     // === SENSORS ===
-    private ColorSensor colorSenor;
+    private ColorSensor colorSenor;   // color sensor 1 - fixed position, sees slot 1 when slot 0 is active
+    private ColorSensor cs2;          // color sensor 2 - fixed position, sees slot 2 when slot 0 is active
+    private ColorSensor cs3;          // color sensor 3 - fixed position, sees slot 0 when slot 0 is active
     private Servo led;
 
     // === VISION ===
@@ -202,7 +229,9 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
     private int manualSpindexerSlot = 0;
     private boolean intakeCoastActive = false;  // after release trigger, intake runs 3 sec while cycling
     private ElapsedTime intakeCoastTimer = new ElapsedTime();
-    private int intakeCycleStep = 0;  // 0..5 for pattern 0->1->2->2->1->0 (all 3 slots, forward then back)
+    private int intakeCycleStep = 0;         // current slot index (0-2) during intake cycling
+    private int spindexerRevolution = 0;     // current revolution (0 = start, grows forward/backward)
+    private boolean spindexerForward = true;  // current cycling direction (true = increasing position)
     private ElapsedTime intakeCycleTimer = new ElapsedTime();
     private ElapsedTime ledBlinkTimer = new ElapsedTime();
     /** true = stick forward moves toward intake (180° from shooter); false = shooter is front. */
@@ -316,6 +345,11 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                 if (fiducials != null && !fiducials.isEmpty()) {
                     for (LLResultTypes.FiducialResult f : fiducials) {
                         if (isTagIdGoal(f.getFiducialId())) {
+                            // PRIMARY: ty-based distance
+                            double ty = result.getTy();
+                            double tyDist = distanceFromTy(ty);
+                            if (tyDist > 0) return tyDist;
+                            // FALLBACK: ta-based
                             double ta = result.getTa();
                             if (ta > 0) {
                                 double d = 72 - (ta / 100.0) * 48;
@@ -326,6 +360,9 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                     }
                     return 48;
                 }
+                double ty = result.getTy();
+                double tyDist = distanceFromTy(ty);
+                if (tyDist > 0) return tyDist;
                 if (result.getTa() > 0) {
                     double d = 72 - (result.getTa() / 100.0) * 48;
                     return Math.max(24, Math.min(72, d));
@@ -369,6 +406,20 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         return raw * DISTANCE_CORRECTION;
     }
 
+    /**
+     * Compute distance from Limelight ty (vertical angle) using trig:
+     *   distance = (TAG_HEIGHT - CAMERA_HEIGHT) / tan(CAMERA_TILT + ty)
+     * Returns -1 if ty is unusable (angle too shallow or negative).
+     */
+    private double distanceFromTy(double tyDeg) {
+        double heightDiff = VISION_TAG_HEIGHT_IN - VISION_CAMERA_HEIGHT_IN;
+        double totalAngleDeg = VISION_CAMERA_TILT_DEG + tyDeg;
+        // Guard: angle must be positive and reasonable (0.5°–60°)
+        if (totalAngleDeg < 0.5 || totalAngleDeg > 60) return -1;
+        double dist = heightDiff / Math.tan(Math.toRadians(totalAngleDeg));
+        return Math.max(24, Math.min(120, dist));
+    }
+
     private double getVisionDistanceInchesRaw() {
         if (limelightEnabled && limelight != null) {
             LLResult result = limelight.getLatestResult();
@@ -377,6 +428,11 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                 if (fiducials != null && !fiducials.isEmpty()) {
                     for (LLResultTypes.FiducialResult f : fiducials) {
                         if (isTagIdInAlliance(f.getFiducialId())) {
+                            // PRIMARY: ty-based distance (much more reliable than ta)
+                            double ty = result.getTy();
+                            double tyDist = distanceFromTy(ty);
+                            if (tyDist > 0) return tyDist;
+                            // FALLBACK: ta-based (only if ty is unusable)
                             double ta = result.getTa();
                             if (ta > 0) {
                                 double distFromTa = 72 - (ta / 100.0) * 48;
@@ -387,6 +443,10 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                     }
                     return 48;
                 }
+                // No fiducials matched but result valid — try global ty
+                double ty = result.getTy();
+                double tyDist = distanceFromTy(ty);
+                if (tyDist > 0) return tyDist;
                 if (result.getTa() > 0) {
                     double distFromTa = 72 - (result.getTa() / 100.0) * 48;
                     return Math.max(24, Math.min(72, distFromTa));
@@ -517,13 +577,14 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         spindexer = hardwareMap.get(Servo.class, "spindexer");
         servoArm = hardwareMap.get(Servo.class, "servoArm");
 
-        // GoBILDA 300 deg servos: full range 500-2500 usec
+        // goBILDA 5-turn (1800 deg) servo: full range 500-2500 usec
         if (spindexer instanceof ServoImplEx) {
             ((ServoImplEx) spindexer).setPwmRange(new PwmControl.PwmRange(500, 2500));
         }
         if (servoArm instanceof ServoImplEx) {
             ((ServoImplEx) servoArm).setPwmRange(new PwmControl.PwmRange(500, 2500));
         }
+        // goBILDA 5-turn torque motors: full range 500-2500 usec (position limits: 0.180 top, 0.500 bottom)
         if (hoodOne instanceof ServoImplEx) {
             ((ServoImplEx) hoodOne).setPwmRange(new PwmControl.PwmRange(500, 2500));
         }
@@ -535,6 +596,16 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         if (colorSenor == null) try { colorSenor = hardwareMap.get(ColorSensor.class, "colorSensor"); } catch (Exception e2) {}
         if (colorSenor != null) {
             try { colorSenor.getClass().getMethod("enableLed", boolean.class).invoke(colorSenor, true); } catch (Exception e) {}
+        }
+        // cs2 & cs3: extra color sensors for smart spindexer (ball presence per slot)
+        // Sensors are FIXED on the frame — they do NOT rotate with the turntable.
+        try { cs2 = hardwareMap.get(ColorSensor.class, "cs2"); } catch (Exception e) { cs2 = null; }
+        if (cs2 != null) {
+            try { cs2.getClass().getMethod("enableLed", boolean.class).invoke(cs2, true); } catch (Exception e) {}
+        }
+        try { cs3 = hardwareMap.get(ColorSensor.class, "cs3"); } catch (Exception e) { cs3 = null; }
+        if (cs3 != null) {
+            try { cs3.getClass().getMethod("enableLed", boolean.class).invoke(cs3, true); } catch (Exception e) {}
         }
         try { led = hardwareMap.get(Servo.class, "led"); } catch (Exception e) { led = null; }
         if (led != null && led instanceof ServoImplEx) ((ServoImplEx) led).setPwmRange(new PwmControl.PwmRange(500, 2500));
@@ -691,6 +762,11 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
             intakeRunning = true;
             intakeCycleStep = 0;
             intakeCycleTimer.reset();
+            // Smart intake: start at first empty slot immediately
+            if (hasSmartSensors()) {
+                int empty = findNextEmptySlot(0, manualSpindexerSlot);
+                if (empty >= 0) intakeCycleStep = empty;
+            }
         }
         if (intakeReverse && !intakeRunning) {
             intakeRunning = true;
@@ -719,14 +795,29 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         if (spindexer == null) return;
         if (shootState != ShootState.IDLE && shootState != ShootState.DONE) return;
 
-        // During intake (trigger held) or coast: 0 -> 1 -> 2 -> 2 -> 1 -> 0 (0.00, 0.460, 0.865)
         if (intakeRunning || intakeCoastActive) {
-            if (intakeCycleTimer.milliseconds() >= SPINDEXER_INTAKE_CYCLE_MS) {
-                intakeCycleStep = (intakeCycleStep + 1) % 6;  // 6 steps: 0,1,2,2,1,0
-                intakeCycleTimer.reset();
+            if (hasSmartSensors()) {
+                // === SMART INTAKE: only move to EMPTY slots (multi-revolution) ===
+                // Sensors are fixed; turntable rotates. At current position, check if
+                // current slot has a ball. If yes, advance one slot in the current direction.
+                if (intakeCycleTimer.milliseconds() >= SPINDEXER_INTAKE_CYCLE_MS) {
+                    intakeCycleTimer.reset();
+                    if (isSlotOccupied(intakeCycleStep, intakeCycleStep)) {
+                        // Ball loaded → advance one slot in current direction
+                        advanceSpindexerSlot();
+                    }
+                    // If slot still empty: stay and wait for ball to land
+                }
+                spindexer.setPosition(getSpindexerIntakePos(intakeCycleStep));
+            } else {
+                // Fallback (no smart sensors): continuous multi-revolution cycling
+                // 5-turn servo: 0→1→2→0→1→2→... (forward), then 2→1→0→2→1→0→... (reverse)
+                if (intakeCycleTimer.milliseconds() >= SPINDEXER_INTAKE_CYCLE_MS) {
+                    intakeCycleTimer.reset();
+                    advanceSpindexerSlot();
+                }
+                spindexer.setPosition(getSpindexerIntakePos(intakeCycleStep));
             }
-            int slot = (intakeCycleStep <= 2) ? intakeCycleStep : (5 - intakeCycleStep);  // 0,1,2,2,1,0
-            spindexer.setPosition(getSpindexerIntakePos(slot));  // 0.00, 0.460, 0.865
             return;
         }
 
@@ -739,6 +830,27 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                 || gamepad1.right_trigger > 0.5 || gamepad2.right_trigger > 0.5;
 
         if (shootBumper && !prevShootBumper && shootState == ShootState.IDLE) {
+            // Reset revolution to 0 for shooting - ensures positions align with kicker plate
+            spindexerRevolution = 0;
+            // COMMENTED OUT: Smart sensor ball detection - testing sequential cycling
+            // if (hasSmartSensors()) {
+            //     // Smart: only start if there's a ball to shoot
+            //     int firstOccupied = findNextOccupiedSlot(0, manualSpindexerSlot);
+            //     if (firstOccupied >= 0) {
+            //         flywheelSpinning = true;
+            //         stateTimer.reset();
+            //         currentSpindexerSlot = firstOccupied;
+            //         if (hasVisionTarget()) {
+            //             manualShootMode = false;
+            //             shootState = ShootState.ALIGNING;
+            //         } else {
+            //             manualShootMode = true;
+            //             shootState = ShootState.INDEXING;
+            //         }
+            //     }
+            //     // No balls loaded → don't start (save flywheel wear)
+            // } else {
+            // Fallback: start from slot 0 (always use this for testing)
             flywheelSpinning = true;
             stateTimer.reset();
             if (hasVisionTarget()) {
@@ -749,6 +861,7 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                 shootState = ShootState.INDEXING;
                 currentSpindexerSlot = 0;
             }
+            // }
         }
         if (!shootBumper && shootState != ShootState.IDLE && shootState != ShootState.DONE) {
             flywheelSpinning = false;
@@ -797,16 +910,31 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                 hoodPosition = computeHoodFromDistance();
                 updateHoodServos();
                 if (isAligned() || stateTimer.seconds() > 5) {
+                    // COMMENTED OUT: Smart sensor ball detection - testing sequential cycling
+                    // if (hasSmartSensors()) {
+                    //     int occupied = findNextOccupiedSlot(0, currentSpindexerSlot);
+                    //     if (occupied < 0) {
+                    //         // No balls — abort shoot
+                    //         flywheelSpinning = false;
+                    //         shootState = ShootState.IDLE;
+                    //     } else {
+                    //         currentSpindexerSlot = occupied;
+                    //         shootState = ShootState.INDEXING;
+                    //         stateTimer.reset();
+                    //     }
+                    // } else {
+                    // Always use fallback: sequential cycling
                     shootState = ShootState.INDEXING;
                     currentSpindexerSlot = 0;
                     stateTimer.reset();
+                    // }
                 }
                 break;
 
             case INDEXING:
                 boolean bBtnIdx = gamepad1.b || gamepad2.b;
                 if (bBtnIdx && !prevB) {
-                    currentSpindexerSlot = (currentSpindexerSlot + 1) % 3;
+                    advanceShootSlot();
                     stateTimer.reset();
                 }
                 prevB = bBtnIdx;
@@ -836,9 +964,26 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
                 spindexer.setPosition(getSpindexerShootPos(currentSpindexerSlot));
                 int kickDownMs = manualShootMode ? MANUAL_KICKER_DOWN_MS : KICKER_DOWN_MS;
                 if (stateTimer.milliseconds() >= kickDownMs) {
-                    currentSpindexerSlot = (currentSpindexerSlot + 1) % 3;
+                    // COMMENTED OUT: Smart sensor ball detection - testing sequential cycling
+                    // if (hasSmartSensors()) {
+                    //     // Find next occupied slot (skip just-kicked slot)
+                    //     int nextOccupied = findNextOccupiedSlot(
+                    //             (currentSpindexerSlot + 1) % 3, currentSpindexerSlot);
+                    //     if (nextOccupied < 0) {
+                    //         // All slots empty — done shooting
+                    //         flywheelSpinning = false;
+                    //         shootState = ShootState.IDLE;
+                    //     } else {
+                    //         currentSpindexerSlot = nextOccupied;
+                    //         shootState = ShootState.INDEXING;
+                    //         stateTimer.reset();
+                    //     }
+                    // } else {
+                    // Always use fallback: sequential cycling with revolution tracking (5-turn servo)
+                    advanceShootSlot();
                     shootState = ShootState.INDEXING;
                     stateTimer.reset();
+                    // }
                 }
                 break;
 
@@ -852,18 +997,117 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         return shootState != ShootState.KICKER_UP && shootState != ShootState.KICKER_DOWN;
     }
 
-    /** Spindexer position for SHOOTING - slots align with kick plate (0.080, 0.480, 0.890). */
+    /** Spindexer position for SHOOTING — per-slot calibrated base + revolution offset. */
     private double getSpindexerShootPos(int slot) {
-        if (slot == 0) return SPINDEXER_SHOOT_0;
-        if (slot == 1) return SPINDEXER_SHOOT_1;
-        return SPINDEXER_SHOOT_2;
+        double base;
+        if (slot == 0) base = SPINDEXER_SHOOT_0;
+        else if (slot == 1) base = SPINDEXER_SHOOT_1;
+        else base = SPINDEXER_SHOOT_2;
+        return Math.max(0.0, Math.min(1.0, base + spindexerRevolution * SPINDEXER_REV_OFFSET));
     }
 
-    /** Spindexer position for INTAKE - slots align with indexer ramp (0.00, 0.460, 0.865). */
+    /** Spindexer position for INTAKE — per-slot calibrated base + revolution offset. */
     private double getSpindexerIntakePos(int slot) {
-        if (slot == 0) return SPINDEXER_INTAKE_0;
-        if (slot == 1) return SPINDEXER_INTAKE_1;
-        return SPINDEXER_INTAKE_2;
+        double base;
+        if (slot == 0) base = SPINDEXER_INTAKE_0;
+        else if (slot == 1) base = SPINDEXER_INTAKE_1;
+        else base = SPINDEXER_INTAKE_2;
+        return Math.max(0.0, Math.min(1.0, base + spindexerRevolution * SPINDEXER_REV_OFFSET));
+    }
+
+    /**
+     * Advance the spindexer by one slot in physical order (1→0→2, forward only).
+     * Physical order: slot 1 (lowest) → slot 0 (middle) → slot 2 (highest).
+     * When reaching max revolution (rev 2, slot 1), wraps back to rev 0, slot 1.
+     * Updates intakeCycleStep and spindexerRevolution.
+     */
+    private void advanceSpindexerSlot() {
+        // Physical order: 1→0→2 (slot indices)
+        // Map: 1→0→2→1→0→2...
+        if (intakeCycleStep == 1) {
+            intakeCycleStep = 0;  // 1 → 0
+        } else if (intakeCycleStep == 0) {
+            intakeCycleStep = 2;  // 0 → 2
+        } else { // intakeCycleStep == 2
+            intakeCycleStep = 1;  // 2 → 1
+            spindexerRevolution++;  // Completed one full cycle
+            if (spindexerRevolution > SPINDEXER_MAX_FWD_REV) {
+                // Hit max (rev 2, slot 1) - wrap back to start
+                spindexerRevolution = 0;
+                intakeCycleStep = 1;  // Back to rev 0, slot 1
+            }
+        }
+    }
+
+    /**
+     * Advance the shoot spindexer slot by one in the forward direction.
+     * During shooting, revolution stays at 0 to keep positions aligned with kicker plate.
+     * Updates currentSpindexerSlot only (does NOT modify spindexerRevolution).
+     */
+    private void advanceShootSlot() {
+        currentSpindexerSlot = (currentSpindexerSlot + 1) % 3;
+        // Note: spindexerRevolution remains at 0 during shooting for consistent alignment
+    }
+
+    // ======================== SMART SPINDEXER ========================
+    // The 3 color sensors (cs3, colorSenor, cs2) are FIXED on the robot frame.
+    // As the turntable rotates, different logical slots pass under different sensors.
+    // Sensor index: 0=cs3, 1=colorSenor, 2=cs2
+    // Reference (activeSlot=0): sensor 0→slot 0, sensor 1→slot 1, sensor 2→slot 2
+    // When activeSlot=N, the mapping rotates by N (direction set by SENSOR_ROTATION_SIGN).
+
+    /** True if all 3 color sensors are configured (smart spindexer available). */
+    private boolean hasSmartSensors() {
+        return cs2 != null && cs3 != null && colorSenor != null;
+    }
+
+    /** Read raw sensor by index: 0=cs3, 1=colorSenor, 2=cs2. Returns true if ball detected. */
+    private boolean sensorDetectsBall(int sensorIndex) {
+        ColorSensor sensor;
+        if (sensorIndex == 0) sensor = cs3;
+        else if (sensorIndex == 1) sensor = colorSenor;
+        else sensor = cs2;
+        if (sensor == null) return false;
+        return (sensor.red() + sensor.green() + sensor.blue()) >= BALL_MIN_BRIGHTNESS;
+    }
+
+    /**
+     * Check if a logical slot has a ball, accounting for turntable rotation.
+     * @param slot       logical slot to check (0, 1, or 2)
+     * @param activeSlot the slot currently at the intake/kicker position
+     *                   (determines turntable orientation → sensor mapping)
+     */
+    private boolean isSlotOccupied(int slot, int activeSlot) {
+        if (!hasSmartSensors()) return false;
+        int sensorIndex;
+        if (SENSOR_ROTATION_SIGN > 0) {
+            // sensor s sees slot (s + activeSlot) % 3
+            // → to read slot n, use sensor (n - activeSlot + 3) % 3
+            sensorIndex = ((slot - activeSlot) % 3 + 3) % 3;
+        } else {
+            // sensor s sees slot (s - activeSlot + 3) % 3
+            // → to read slot n, use sensor (n + activeSlot) % 3
+            sensorIndex = (slot + activeSlot) % 3;
+        }
+        return sensorDetectsBall(sensorIndex);
+    }
+
+    /** Find the next empty slot starting from startSlot (wraps around). Returns -1 if all full. */
+    private int findNextEmptySlot(int startSlot, int activeSlot) {
+        for (int i = 0; i < 3; i++) {
+            int slot = (startSlot + i) % 3;
+            if (!isSlotOccupied(slot, activeSlot)) return slot;
+        }
+        return -1;
+    }
+
+    /** Find the next occupied slot starting from startSlot (wraps around). Returns -1 if all empty. */
+    private int findNextOccupiedSlot(int startSlot, int activeSlot) {
+        for (int i = 0; i < 3; i++) {
+            int slot = (startSlot + i) % 3;
+            if (isSlotOccupied(slot, activeSlot)) return slot;
+        }
+        return -1;
     }
 
     private double computeTargetVelocity() {
@@ -886,6 +1130,17 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         if (h < 0) h = 0;
         if (h > 1) h = 1;
         return h;
+    }
+
+    /**
+     * Map internal hoodPosition (0.0=low, 1.0=high) to 5-turn servo position.
+     * Inverted: hoodPosition 0.0 → servo 0.500 (bottom), hoodPosition 1.0 → servo 0.180 (top).
+     */
+    private double mapHoodToServoPosition(double hoodPos) {
+        // Clamp to [0, 1] first
+        hoodPos = Math.max(0.0, Math.min(1.0, hoodPos));
+        // Inverted linear mapping: 0.0 → 0.500, 1.0 → 0.180
+        return HOOD_POS_BOTTOM - (hoodPos * (HOOD_POS_BOTTOM - HOOD_POS_TOP));
     }
 
     /** Linear interpolation from anchor arrays. distIn = corrected distance; arrays same length. */
@@ -930,8 +1185,10 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         boolean inShootSequence = shootState == ShootState.ALIGNING || shootState == ShootState.INDEXING
                 || shootState == ShootState.KICKER_UP || shootState == ShootState.KICKER_DOWN;
         if (inShootSequence) hoodPosition = computeHoodFromDistance();
-        hoodOne.setPosition(hoodPosition);
-        hood.setPosition(1 - hoodPosition);
+        double servoPos = mapHoodToServoPosition(hoodPosition);
+        hoodOne.setPosition(servoPos);
+        // Second servo moves opposite: when hoodOne is at bottom (0.500), hood is at top (0.180)
+        hood.setPosition(HOOD_POS_TOP + HOOD_POS_BOTTOM - servoPos);
     }
 
     /** Green ball: green clearly dominant (e.g. R29 G68 B58). No ball = white only. */
@@ -1004,6 +1261,29 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
         telemetry.addData("Drive front", driveOrientationIntakeFront ? "INTAKE (LT slight)" : "SHOOTER (RT/RB slight)");
         telemetry.addData("Indexing (B)", intakeCycleToggle ? "ON (press B again to stop)" : "OFF (press B to run)");
 
+        // Slot occupancy from smart sensors (fixed sensors + rotation mapping)
+        if (hasSmartSensors()) {
+            // Determine current active slot for sensor mapping
+            int activeSlot = manualSpindexerSlot;
+            if (intakeRunning || intakeCoastActive) activeSlot = intakeCycleStep;
+            else if (shootState != ShootState.IDLE && shootState != ShootState.DONE) activeSlot = currentSpindexerSlot;
+            String s0 = isSlotOccupied(0, activeSlot) ? "BALL" : "empty";
+            String s1 = isSlotOccupied(1, activeSlot) ? "BALL" : "empty";
+            String s2 = isSlotOccupied(2, activeSlot) ? "BALL" : "empty";
+            telemetry.addData("Slots 0|1|2", "[" + s0 + "] [" + s1 + "] [" + s2 + "]");
+            // Raw sensor values for calibration (sensor 0=cs3, 1=color, 2=cs2)
+            telemetry.addData("Raw sensors",
+                    "cs3=" + (cs3.red()+cs3.green()+cs3.blue())
+                            + " cs=" + (colorSenor.red()+colorSenor.green()+colorSenor.blue())
+                            + " cs2=" + (cs2.red()+cs2.green()+cs2.blue()));
+            telemetry.addData("Active slot", activeSlot);
+            telemetry.addData("Rotation sign", SENSOR_ROTATION_SIGN > 0 ? "+1" : "-1");
+        }
+        if (cs2 == null || cs3 == null) {
+            telemetry.addData("Smart sensors", "cs2=" + (cs2 != null ? "OK" : "MISSING")
+                    + " cs3=" + (cs3 != null ? "OK" : "MISSING"));
+        }
+
         if ((gamepad1.a || gamepad2.a) && !prevG2A) {
             velocityPreset = (velocityPreset + 1) % 3;
             targetVelocity = velocityPreset == 0 ? SHOOTER_ANCHOR_VELOCITY[0] : velocityPreset == 1 ? SHOOTER_ANCHOR_VELOCITY[1] : SHOOTER_ANCHOR_VELOCITY[2];
@@ -1040,7 +1320,9 @@ public class CompetitionTeleOpBlue extends LinearOpMode {
             double txErr = (Math.abs(tx) < 999) ? (tx - ALIGNMENT_TX_OFFSET_DEG) : 0;
             telemetry.addData("Vision (shoot)", limelightEnabled ? "LimeLight" : "AprilTag");
             telemetry.addData("Alliance target", "YES");
-            telemetry.addData("Distance", String.format("%.1f in", dist));
+            telemetry.addData("Distance", String.format("%.1f in (ty-based)", dist));
+            telemetry.addData("Computed vel", String.format("%.0f tks/s", computeTargetVelocity()));
+            telemetry.addData("Computed hood", String.format("%.3f", computeHoodFromDistance()));
             telemetry.addData("tx", String.format("%.1f deg (0=aligned)", tx));
             if (Math.abs(txErr) <= ALIGNMENT_TOLERANCE_DEG) telemetry.addData(">>>", "ALIGNED - SHOOT");
             else if (Math.abs(tx) < 999) telemetry.addData(">>>", txErr > 0 ? "STRAFE LEFT" : "STRAFE RIGHT");
