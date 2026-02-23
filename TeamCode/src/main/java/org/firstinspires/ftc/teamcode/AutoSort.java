@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.hardwareMap;
 import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
 import static org.firstinspires.ftc.teamcode.mechanisms.ColourSensor.colour.GREEN;
 import static org.firstinspires.ftc.teamcode.mechanisms.ColourSensor.colour.PURPLE;
@@ -16,6 +15,10 @@ import org.firstinspires.ftc.teamcode.mechanisms.ColourSensor;
 import org.firstinspires.ftc.teamcode.mechanisms.Feeder;
 import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
 import org.firstinspires.ftc.teamcode.mechanisms.SpinSorter;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AutoSort {
     private SpinSorter spindexer = null;
@@ -47,123 +50,34 @@ public class AutoSort {
         colourSensor.init(hardwareMap);
         spindexer.init();
         if(motif == 21){
-            do {
-                spindexer.SpinLeft(true);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while(colourSensor.getColour() != GREEN);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(1, telemetry);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(2, telemetry);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(3, telemetry);
+            getBalls();
         }
         else if(motif == 22){
-            do {
-                spindexer.SpinLeft(true);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while(colourSensor.getColour() != PURPLE);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(1, telemetry);
-            do {
-                spindexer.SpinLeft(true);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while(colourSensor.getColour() != GREEN);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(2, telemetry);
-            do {
-                spindexer.SpinLeft(true);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while(colourSensor.getColour() != PURPLE);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(3, telemetry);
+            getBalls();
         }
         else if(motif == 23){
-            do {
-                spindexer.SpinLeft(true);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } while(colourSensor.getColour() != PURPLE);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(1, telemetry);
-            do {
-                spindexer.SpinLeft(true);
-                try {
-                    sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-
-                }
-            } while(colourSensor.getColour() != PURPLE);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(2, telemetry);
-            spindexer.SpinLeft(true);
-            try {
-                sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            launch(3, telemetry);
+            getBalls();
         }
+        List output;
+        output = getBalls();
+        telemetry.addLine(output.toString());
+        telemetry.update();
+    }
+    public List getBalls(){
+        List<String> balls = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            if (colourSensor.getColour(i + 1) == GREEN) {
+                balls.add("G" + i);
+            } else if (colourSensor.getColour(i + 1) == PURPLE) {
+                balls.add("P" + i);
+            } else {
+                balls.add("X" + i);
+            }
+        }
+        return balls;
+    }
+    public String getVersion(){
+        return "Autosort V2.0";
     }
     public AutoSort(HardwareMap hardwareMap){
         spindexer = new SpinSorter(hardwareMap, 0.14, telemetry);

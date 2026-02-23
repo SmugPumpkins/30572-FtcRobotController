@@ -32,20 +32,11 @@ public class LimeLightTest extends OpMode {
         limelight.updateRobotOrientation(orientation.getYaw());
         LLResult llResult = limelight.getLatestResult();
         Pose3D botPose = llResult.getBotpose_MT2();
-        if (llResult == null && llResult.isValid()) {
+        if (llResult == null) {
             telemetry.addLine("LimeLight result detected as null");
             telemetry.addData("llResult:", llResult);
             telemetry.update();
-        } else if (llResult != null && !llResult.isValid()) {
-            telemetry.addLine("LimeLight result is invalid");
-            telemetry.addData("llResult:", llResult);
-            telemetry.update();
-        } else if (llResult == null && !llResult.isValid()) {
-            telemetry.addLine("LimeLight result detected as null");
-            telemetry.addLine("LimeLight result is invalid");
-            telemetry.addData("llResult:", llResult);
-            telemetry.update();
-        } else if (llResult != null && llResult.isValid()) {
+        } else if (llResult != null) {
             telemetry.addData("Tx", llResult.getTx());
             telemetry.addData("Ty", llResult.getTy());
             telemetry.addData("Ta", llResult.getTa());
