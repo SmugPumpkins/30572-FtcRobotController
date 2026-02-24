@@ -14,6 +14,7 @@ public class AutoSortTest extends OpMode {
         sorter.init(hardwareMap);
     }
     public void init_loop(){
+        telemetry.addData("Version", sorter.getVersion());
         if(input == 1) {
             telemetry.addLine("Autosort test");
             telemetry.addLine("Press X to sort with motif GPP");
@@ -42,7 +43,7 @@ public class AutoSortTest extends OpMode {
     }
     public void start(){
         sorter.sort(hardwareMap, telemetry, input);
-        telemetry.addLine("Finished");
-        telemetry.update();
+        //telemetry.addLine("Finished");
+        //telemetry.update();
     }
 }

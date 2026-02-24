@@ -16,7 +16,9 @@ public class ColourSensorTest extends OpMode {
         spindexer.init();
     }
     public void loop(){
-        colourSensor.getColour();
+        colourSensor.getColour(1);
+        colourSensor.getColour(2);
+        colourSensor.getColour(3);
         telemetry.update();
         if(gamepad1.bWasReleased()) {
             spindexer.SpinRight(true);
