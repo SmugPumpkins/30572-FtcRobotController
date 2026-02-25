@@ -90,9 +90,9 @@ public class Rev1 extends LinearOpMode {
      *   Far range (>80"): near motor limit, hood rises slightly for optimal arc
      */
     public static double[] SHOOTER_ANCHOR_TY     = { -12.5,   -8.0,   -6.0,    -2.6,    -0.4,     4.0   };
-    //                               approx dist:   ~117"   ~83"   ~74"    ~61"   ~55"   ~45"
-    public static double[] SHOOTER_TY_VELOCITY    = { 1793,  1193,  1193,  1193,  1093,  1193 };
-    public static double[] SHOOTER_TY_HOOD        = { 0.65,  0.05,  0.20,  0.30,  0.40,  0.50 };
+    //                               approx dist:    ~117"    ~83"    ~74"     ~61"     ~55"      ~45
+    public static double[] SHOOTER_TY_VELOCITY    = { 1693,  1193,  1193,  1193,  1093,  1193 };
+    public static double[] SHOOTER_TY_HOOD        = { 0.25,  0.07,  0.20,  0.30,  0.40,  0.50 };
     public static double VELOCITY_DEFAULT = 1400;   // 3000 RPM close-range fallback (3000×28/60)
     /** Far-side: ty below this threshold -> motor max power (saturated). */
     public static double FAR_TY_THRESHOLD = -14.0;
