@@ -44,6 +44,10 @@ public class MecanumDriveTrain {
     }
 
     public void init(int front_left_direction, int front_right_direction, int back_left_direction, int back_right_direction) {
+        back_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        back_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        front_left.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        front_right.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         if (front_left_direction == FORWARD) {
             front_left.setDirection(DcMotor.Direction.FORWARD);
         } else {

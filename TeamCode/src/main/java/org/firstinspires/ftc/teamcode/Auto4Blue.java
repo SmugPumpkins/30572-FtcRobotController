@@ -18,10 +18,11 @@ import org.firstinspires.ftc.teamcode.mechanisms.SpinSorter;
 public class Auto4Blue extends OpMode {
    int step1 = 250;
     int step2 = 500;
-    int step3 = 3000;
-    int step4 = 3000;
+    int step3 = 750;
+    int step4 = 750;
     int step5 = 500;
-    int step6 = 1000;
+    int step6 = 3000;
+    int convert = 2;
     private MecanumDriveTrain drive;
     Feeder servoArm = null;
     Flywheel flywheel = null;
@@ -101,26 +102,26 @@ public class Auto4Blue extends OpMode {
 
     @Override
     public void start() {
-        forward(step1);
+        forward(step1 * convert);
         sorter.SpinRight(true);
         launch();
         sorter.SpinRight(true);
         launch();
         sorter.SpinRight(true);
         launch();
-        rotate(step2, 1);
+        rotate(step2 * convert, 1);
         intake.RunIntake();
-        reverse(step3);
+        reverse(step3 * convert);
         intake.StopIntake();
-        forward(step4);
-        rotate(step5, 1);
+        forward(step4 * convert);
+        rotate(step5 * convert, 1);
         sorter.SpinRight(true);
         launch();
         sorter.SpinRight(true);
         launch();
         sorter.SpinRight(true);
         launch();
-        strafe(step6, 1);
+        strafe(step6 * convert, 1);
     }
     @Override
     public void loop() {
