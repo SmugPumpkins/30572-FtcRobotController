@@ -4,30 +4,15 @@ import static org.firstinspires.ftc.teamcode.utils.Constants.FORWARD;
 import static org.firstinspires.ftc.teamcode.utils.Constants.REVERSE;
 import static java.lang.Thread.sleep;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.mechanisms.Feeder;
-import org.firstinspires.ftc.teamcode.mechanisms.Flywheel;
-import org.firstinspires.ftc.teamcode.mechanisms.Hood;
-import org.firstinspires.ftc.teamcode.mechanisms.Intake;
 import org.firstinspires.ftc.teamcode.mechanisms.MecanumDriveTrain;
-import org.firstinspires.ftc.teamcode.mechanisms.SpinSorter;
-
-@Autonomous(name = "Auto4B", group = "Blue Auto")
-public class Auto4Blue extends OpMode {
-    double step1 = 56.5;
-    int step2 = 40;
-    double step3 = 29;
-    double step4 = 29;
-    int step5 = 40;
-    double step6 = 29;
+@TeleOp
+public class InchTest extends OpMode{
     private MecanumDriveTrain drive;
-    Feeder servoArm = null;
-    Flywheel flywheel = null;
-    Intake intake = null;
-    SpinSorter sorter = null;
-    private Launch_v1 launch;
+    double increment = 10;
+    int movement = 0;
     public void backward(double inch){
         long time = (long)inch * (500/44);
         drive.drive(1, 0, 0);
@@ -97,66 +82,60 @@ public class Auto4Blue extends OpMode {
         }
         drive.drive(0, 0, 0);
     }
-    public void launch(){
-        flywheel.turnMotorOff(true);
-        flywheel.turnMotorOn(true);
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        servoArm.up(true);
-        servoArm.down(false);
-        try {
-            sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        servoArm.down(true);
-        servoArm.up(false);
-    }
     @Override
-    public void init() {
+    public void init(){
         drive = new MecanumDriveTrain(hardwareMap, telemetry);
-        sorter = new SpinSorter(hardwareMap, 0.14, telemetry);
-        flywheel = new Flywheel(hardwareMap, REVERSE, FORWARD, telemetry);
-        servoArm = new Feeder(hardwareMap, telemetry);
-        intake = new Intake(hardwareMap, telemetry);
-        telemetry.addLine("V1");
-        telemetry.addLine("Blue alliance");
-        telemetry.addLine("Back up, shoot, collect balls from left, return to the line and shoot, then strafe off line");
-        telemetry.addLine("Place robot facing toward goal, on the line");
         drive.init(REVERSE, FORWARD, REVERSE, FORWARD);
-        intake.init(FORWARD);
+        telemetry.addLine("Select movement:");
+        telemetry.addLine("Press A to move forward");
+        telemetry.addLine("Press B to move backward");
+        telemetry.addLine("Press X to strafe left");
+        telemetry.addLine("Press Y to strafe right");
+        telemetry.addLine("Press left bumper to rotate left");
+        telemetry.addLine("Press right bumper to rotate right");
+        telemetry.addLine("DO NOT CONTINUE WITHOUT SETTING THE MOVEMENT, YOU WILL GET AN ERROR");
+        telemetry.addLine("You have been warned.");
         telemetry.update();
     }
-
-
-    @Override
-    public void start() {
-        backward(step1);
-        sorter.SpinRight(true);
-        launch();
-        sorter.SpinRight(true);
-        launch();
-        sorter.SpinRight(true);
-        launch();
-        left_rotate(step2);
-        intake.RunIntake();
-        forward(step3);
-        intake.StopIntake();
-        backward(step4);
-        right_rotate(step5);
-        sorter.SpinRight(true);
-        launch();
-        sorter.SpinRight(true);
-        launch();
-        sorter.SpinRight(true);
-        launch();
-        left_strafe(step6);
+    public void init_loop(){
+        if (gamepad1.aWasPressed()) {
+            movement = 1;
+        } else if (gamepad1.bWasPressed()) {
+            movement = 2;
+        } else if (gamepad1.xWasPressed()) {
+            movement = 3;
+        } else if (gamepad1.yWasPressed()) {
+            movement = 4;
+        } else if (gamepad1.leftBumperWasPressed()) {
+            movement = 5;
+        } else if (gamepad1.rightBumperWasPressed()) {
+            movement = 6;
+        }
+        if (movement != 0) {
+            telemetry.addLine("Variables prepped");
+            telemetry.update();
+        }
     }
     @Override
-    public void loop() {
-
+    public void loop(){
+        increment = increment + 10;
+        telemetry.addLine("Press A to continue with next increment");
+        telemetry.addLine("Increasing movement target in increments of 10 inches");
+        telemetry.addData("Current movement target", increment);
+        telemetry.update();
+        while(!gamepad1.aWasPressed()){}
+        if (movement == 1) {
+            forward(increment);
+        } else if (movement == 2) {
+            backward(increment);
+        } else if (movement == 3) {
+            left_strafe(increment);
+        } else if (movement == 4) {
+            right_strafe(increment);
+        } else if (movement == 5) {
+            left_rotate((int)increment);
+        } else if (movement == 6) {
+            right_rotate((int)increment);
+        }
     }
 }
