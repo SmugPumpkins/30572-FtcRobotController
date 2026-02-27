@@ -76,16 +76,18 @@ public class InchTest extends LinearOpMode {
     }
 
     public void backward(double inch) throws InterruptedException {
-        long time = (long) (inch * (500.0 / 44.0));
+        inch = Math.pow((-0.003767*inch), 2)+1.608894*inch + 3.765281;
+        double time = (double) (inch * (500.0 / 44.0));
         drive.drive(1, 0, 0);
-        sleep(time);
+        sleep((long)time);
         drive.drive(0, 0, 0);
     }
 
     public void forward(double inch) throws InterruptedException {
-        long time = (long) (inch * (500.0 / 47.0));
+        inch = Math.pow((-0.008891*inch), 2)+1.962775*inch + 4.442436;
+        double time = (long) (inch * (500.0 / 47.0));
         drive.drive(-1, 0, 0);
-        sleep(time);
+        sleep((long)time);
         drive.drive(0, 0, 0);
     }
 
@@ -104,16 +106,18 @@ public class InchTest extends LinearOpMode {
     }
 
     public void left_strafe(double inch) throws InterruptedException {
-        long time = (long) (inch * (500.0 / 25.0));
+        inch = Math.pow((0.002457*inch), 2)+0.886793*inch + 4.093311;
+        double time = (double) (inch * (500.0 / 25.0));
         drive.drive(0, 1, 0);
-        sleep(time);
+        sleep((long)time);
         drive.drive(0, 0, 0);
     }
 
     public void right_strafe(double inch) throws InterruptedException {
-        long time = (long) (inch * (500.0 / 24.0));
+        inch = inch * 0.996389 + 3.47166;
+        double time = (double) (inch * (500.0 / 24.0));
         drive.drive(0, -1, 0);
-        sleep(time);
+        sleep((long)time);
         drive.drive(0, 0, 0);
     }
 }
