@@ -10,7 +10,7 @@ import org.firstinspires.ftc.robotcore.external.Telemetry;
 public class Feeder {
     private boolean servoArm_homed;
     public double servoArm_position;
-    private final double[] positions = {0.3, 0};
+    private final double[] positions = {0.4, 0};
     private int index = 0;
     private Telemetry telemetry;
 

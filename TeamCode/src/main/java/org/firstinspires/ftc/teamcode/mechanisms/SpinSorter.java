@@ -13,9 +13,10 @@ public class SpinSorter {
     public double spindexer_position;
 
     public void init() {
+        spindexer.resetDeviceConfigurationForOpMode();
         spindexer.setPosition(spindexer_position);
     }
-    private final double[] positions = {0.105, 0.53, 0.995, 0.53};
+    private final double[] positions = {0.002, 0.165, 0.235, 0.165};
     private int index = 0;
     public void SpinLeft(boolean button) {
         if (button) {
